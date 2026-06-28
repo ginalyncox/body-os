@@ -9,6 +9,7 @@ from .skills.guided_flow import GuidedFlowSkill
 from .skills.morning_vitals import MorningVitalsSkill
 from .content import load_flows
 from .skills.pacing import PacingSkill
+from .skills.dock import DockSkill
 from .skills.shutdown import ShutdownSkill
 from .state import SessionState
 from .voice.orchestrator import VoiceOrchestrator
@@ -39,6 +40,13 @@ class Router:
         self.motor = create_motor(config.motor_config())
         self.pacing = PacingSkill()
         self.flows = GuidedFlowSkill()
+        from .battery import create_battery
+        self.battery = create_battery(
+            config.battery_driver,
+            config.battery_mock_percent,
+            config.battery_mock_charging,
+        )
+        self.dock = DockSkill()
 
     def _check_crisis(self, text: str) -> bool:
         lower = text.lower()
@@ -54,7 +62,7 @@ class Router:
             f"I'm {name}. Commands: morning, flare, reset, reset5, deep, shutdown, "
             "hijacked, pain, itch, sensory, doom, pacing start ACTIVITY MINUTES, "
             "tier green|yellow|red|black, come here, go kitchen|desk|bedroom, "
-            "status, help, quit."
+            "status, battery, dock, help, quit."
         )
 
     def handle(self, text: str) -> bool:
@@ -93,15 +101,39 @@ class Router:
             v = self.store.today_vitals()
             tier = self.config.tier
             gy = self.store.week_green_yellow_count()
+            bat = self.battery.read()
+            bat_str = f"Battery {bat.percent:.0f}%"
+            if bat.charging:
+                bat_str += ", charging"
             if v:
                 self.voice.say(
                     f"{tier.capitalize()} day. Pain {v.get('morning_pain')}, "
-                    f"energy {v.get('morning_energy')}. "
+                    f"energy {v.get('morning_energy')}. {bat_str}. "
                     f"This week: {gy} green or yellow days toward SLO of five.",
                     force=True,
                 )
             else:
-                self.voice.say(f"{tier.capitalize()} day. No vitals logged yet. Say morning.", force=True)
+                self.voice.say(
+                    f"{tier.capitalize()} day. No vitals logged yet. {bat_str}. Say morning.",
+                    force=True,
+                )
+            return True
+
+        if lower == "battery":
+            bat = self.battery.read()
+            if bat.charging:
+                self.voice.say(f"Charging. {bat.percent:.0f} percent.", force=True)
+            elif bat.is_low:
+                self.voice.say(
+                    f"{bat.percent:.0f} percent. I should get to the dock.",
+                    force=True,
+                )
+            else:
+                self.voice.say(f"{bat.percent:.0f} percent. I'm good.", force=True)
+            return True
+
+        if lower in ("dock", "go dock", "charge"):
+            self.dock.seek(self.voice, self.motor, self.config, self.state)
             return True
 
         if tokens[0] == "tier" and len(tokens) >= 2:

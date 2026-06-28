@@ -35,9 +35,23 @@ motor:
   # serial_port: /dev/ttyUSB0
   # serial_baud: 115200
   waypoints:
+    dock: { x: 0.0, y: 0.0 }
     desk: { x: 1.0, y: 0.0 }
     kitchen: { x: 3.0, y: 2.0 }
     bedroom: { x: 0.5, y: 4.0 }
+
+autonomy:
+  enabled: true
+  check_interval_seconds: 30
+  proactive: true
+  mutual_care: true
+  roll_when_charging: true   # Scout rolls to dock alone; false on risky red days
+
+battery:
+  driver: mock              # mock | ina219
+  mock_percent: 85
+  mock_charging: false
+  # Test low battery: mock_percent: 22
 
 sync:
   enabled: true

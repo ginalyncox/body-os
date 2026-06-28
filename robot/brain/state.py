@@ -24,6 +24,9 @@ class SessionState:
     pacing_end: datetime | None = None
     last_flare_severity: int | None = None
     quiet_mode: bool = False  # black day default
+    battery_percent: float = 100.0
+    charging: bool = False
+    dock_attempts: int = 0
 
     def set_tier(self, tier: str) -> None:
         self.tier = Tier(tier)

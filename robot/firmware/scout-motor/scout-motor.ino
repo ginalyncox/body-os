@@ -32,7 +32,10 @@ void loop() {
     stopMotors();
     Serial.println("OK");
   } else if (line == "COME") {
-  driveForward(1500);
+    driveForward(1500);
+    Serial.println("DONE");
+  } else if (line == "DOCK") {
+    driveBackward(3000);
     Serial.println("DONE");
   } else if (line.startsWith("GOTO ")) {
     String dest = line.substring(5);
@@ -49,6 +52,17 @@ void driveForward(unsigned long ms) {
   digitalWrite(IN2, LOW);
   digitalWrite(IN3, HIGH);
   digitalWrite(IN4, LOW);
+  analogWrite(ENA, SPEED);
+  analogWrite(ENB, SPEED);
+  delay(ms);
+  stopMotors();
+}
+
+void driveBackward(unsigned long ms) {
+  digitalWrite(IN1, LOW);
+  digitalWrite(IN2, HIGH);
+  digitalWrite(IN3, LOW);
+  digitalWrite(IN4, HIGH);
   analogWrite(ENA, SPEED);
   analogWrite(ENB, SPEED);
   delay(ms);

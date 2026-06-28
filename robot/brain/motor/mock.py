@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import time
 from abc import ABC, abstractmethod
 
 
@@ -48,6 +49,11 @@ class MockMotor(MotorDriver):
 
     def come_here(self) -> bool:
         return self.go_to("user")
+
+    def dock_creep(self) -> None:
+        """Slow reverse onto charge contacts — last 20 cm."""
+        print("   [motors: dock creep — reverse 3s]")
+        time.sleep(0.5)
 
     @property
     def is_moving(self) -> bool:

@@ -35,6 +35,16 @@ class RobotConfig:
     sync_enabled: bool = True
     sync_host: str = "0.0.0.0"
     sync_port: int = 8765
+    autonomy_enabled: bool = True
+    autonomy_interval: int = 30
+    proactive: bool = True
+    mutual_care: bool = True
+    roll_when_charging: bool = True
+    schedule_morning: str = "08:00"
+    battery_driver: str = "mock"
+    battery_mock_percent: float = 85.0
+    battery_mock_charging: bool = False
+    life_context_path: Path | None = None
     raw: dict[str, Any] = field(default_factory=dict)
 
     @classmethod
@@ -57,6 +67,9 @@ class RobotConfig:
         voice = raw.get("voice", {})
         motor = raw.get("motor", {})
         sync = raw.get("sync", raw.get("companion", {}))
+        autonomy = raw.get("autonomy", {})
+        battery = raw.get("battery", {})
+        schedule = raw.get("schedule", {})
 
         data_dir = Path(raw.get("companion", {}).get("data_dir", "./brain/data/local"))
         if not data_dir.is_absolute():
@@ -85,6 +98,16 @@ class RobotConfig:
             sync_enabled=bool(sync.get("enabled", True)),
             sync_host=sync.get("host", "0.0.0.0"),
             sync_port=int(sync.get("port", 8765)),
+            autonomy_enabled=bool(autonomy.get("enabled", True)),
+            autonomy_interval=int(autonomy.get("check_interval_seconds", 30)),
+            proactive=bool(autonomy.get("proactive", True)),
+            mutual_care=bool(autonomy.get("mutual_care", True)),
+            roll_when_charging=bool(autonomy.get("roll_when_charging", True)),
+            schedule_morning=schedule.get("morning_vitals", "08:00"),
+            battery_driver=battery.get("driver", "mock"),
+            battery_mock_percent=float(battery.get("mock_percent", 85)),
+            battery_mock_charging=bool(battery.get("mock_charging", False)),
+            life_context_path=ROOT / "life-context.yaml" if (ROOT / "life-context.yaml").exists() else None,
             raw=raw,
         )
 

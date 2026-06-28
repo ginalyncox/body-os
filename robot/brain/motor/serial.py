@@ -75,6 +75,9 @@ class SerialMotor(MotorDriver):
         self._moving = False
         return resp.upper() in ("OK", "DONE", "PONG", "")
 
+    def dock_creep(self) -> None:
+        self._cmd("DOCK")
+
     def come_here(self) -> bool:
         return self.go_to("user")
 

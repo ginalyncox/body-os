@@ -156,6 +156,13 @@ class GPIOMotor(MotorDriver):
         print(f"   [gpio: navigating to {waypoint} ({tx}, {ty})]")
         return self._navigate_to(tx, ty)
 
+    def dock_creep(self) -> None:
+        if not self._gpio:
+            print("   [gpio: dock creep — reverse 3s]")
+            time.sleep(0.5)
+            return
+        self._drive(False, False, 3.0)
+
     def come_here(self) -> bool:
         return self.go_to("user")
 

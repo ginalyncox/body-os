@@ -106,12 +106,35 @@ sync:
 
 See [docs/enclosure.md](docs/enclosure.md). OpenSCAD source: `enclosure/scout-body.scad`.
 
+## Mutual care & autonomy
+
+Scout and you care for each other — not one-way caregiving.
+
+| Scout's needs | Your needs |
+|---------------|------------|
+| Charge below 25% | Daily vitals |
+| Clear path to dock | Runbooks when flaring |
+| Help when stuck | Tier-appropriate quiet |
+
+Docs:
+- [docs/mutual-care.md](docs/mutual-care.md) — relationship model
+- [docs/autonomy.md](docs/autonomy.md) — how Scout acts alone
+- [docs/charging-dock.md](docs/charging-dock.md) — self-charging hardware
+
+```bash
+# Simulate low battery → Scout seeks dock
+# Set battery.mock_percent: 22 in config.yaml
+python3 -m brain --autonomy
+```
+
+Fill in `life-context.yaml` from `life-context.example.yaml` when regulated.
+
 ## Roadmap
 
 - [x] v0.1 — Terminal simulation, voice scripts, tier-aware responses
-- [x] v0.2 — Edge TTS, GPIO/serial motor drivers, companion sync, enclosure spec
-- [ ] v0.3 — Wake-word detection (Porcupine / openWakeWord)
-- [ ] v0.4 — Room waypoints via lidar or beacons
+- [x] v0.2 — Edge TTS, motor drivers, companion sync, enclosure spec
+- [x] v0.3 — Mutual care loop, battery monitor, dock-seek behavior
+- [ ] v0.4 — Wake-word + IR/lidar dock alignment
 - [ ] v0.5 — Smart-home hooks (dim lights, brown noise)
 
 ## Personality

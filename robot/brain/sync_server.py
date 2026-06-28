@@ -7,9 +7,9 @@ import threading
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from typing import TYPE_CHECKING
 
-from ..config import RobotConfig
-from ..data.store import DataStore
-from ..data.sync_transform import robot_bundle_to_companion
+from .config import RobotConfig
+from .data.store import DataStore
+from .data.sync_transform import robot_bundle_to_companion
 
 if TYPE_CHECKING:
     pass
