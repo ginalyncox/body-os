@@ -8,7 +8,12 @@ from .tts import TextToSpeech, create_tts
 class VoiceOrchestrator:
     def __init__(self, config: RobotConfig) -> None:
         self.config = config
-        self.tts: TextToSpeech = create_tts(config.tts_engine, config.name)
+        self.tts: TextToSpeech = create_tts(
+            config.tts_engine,
+            name=config.name,
+            voice=config.voice_id,
+            hybrid=config.voice_hybrid,
+        )
         self.stt: SpeechToText = create_stt(config.stt_engine)
 
     def say(self, text: str, force: bool = False) -> None:

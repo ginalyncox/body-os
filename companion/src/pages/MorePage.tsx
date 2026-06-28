@@ -1,11 +1,13 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useAppData } from '../hooks/useAppData'
+import { useRobotSync } from '../hooks/useRobotSync'
 import { KNOWN_TRIGGERS, SLOS, PROTOCOLS } from '../data/content'
-import { Card, Button, Textarea, TierBadge, PageHeader } from '../components/ui'
+import { Card, Button, Textarea, TierBadge, PageHeader, Input } from '../components/ui'
 
 export function MorePage() {
   const { data, addPostmortem, exportData, importData, clearData } = useAppData()
+  const robot = useRobotSync(data, importData)
   const [showPmForm, setShowPmForm] = useState(false)
   const [pmText, setPmText] = useState({
     date: new Date().toISOString().slice(0, 10),
@@ -186,6 +188,37 @@ export function MorePage() {
             </Card>
           ))}
         </div>
+      </section>
+
+      <section className="mb-8">
+        <h2 className="text-sm font-medium text-text-muted uppercase tracking-wide mb-3">
+          Robot sync
+        </h2>
+        <Card className="space-y-3">
+          <Input
+            label="Robot sync URL"
+            value={robot.syncUrl}
+            onChange={(e) => robot.saveUrl(e.target.value)}
+            placeholder="http://127.0.0.1:8765/api/sync"
+          />
+          <div className="flex gap-2 flex-wrap">
+            <Button variant="secondary" onClick={robot.ping} disabled={robot.loading} className="flex-1 text-sm min-h-10">
+              Ping
+            </Button>
+            <Button variant="secondary" onClick={robot.pull} disabled={robot.loading} className="flex-1 text-sm min-h-10">
+              Pull from robot
+            </Button>
+            <Button variant="secondary" onClick={robot.push} disabled={robot.loading} className="flex-1 text-sm min-h-10">
+              Push to robot
+            </Button>
+          </div>
+          {robot.status && (
+            <p className="text-xs text-text-muted">{robot.status}</p>
+          )}
+          <p className="text-xs text-text-muted">
+            Start the robot with sync enabled: <code className="text-accent">python3 -m brain</code>
+          </p>
+        </Card>
       </section>
 
       <section className="mb-8">

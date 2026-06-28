@@ -36,7 +36,7 @@ class Router:
         self.state.set_tier(config.tier)
         self.voice = VoiceOrchestrator(config)
         self.store = DataStore(config.data_dir)
-        self.motor = create_motor(config.motor_driver, config.waypoints)
+        self.motor = create_motor(config.motor_config())
         self.pacing = PacingSkill()
         self.flows = GuidedFlowSkill()
 

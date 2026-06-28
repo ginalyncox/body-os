@@ -44,66 +44,75 @@ A rolling, talking assistive aid that runs **body-os** protocols and **CBT-CP** 
 
 ## Quick start (no hardware)
 
-Simulate the robot in your terminal — text in, spoken-style prompts out:
-
 ```bash
 cd robot
-python -m venv .venv
-source .venv/bin/activate   # Windows: .venv\Scripts\activate
-pip install -r requirements.txt
-cp config.example.yaml config.yaml
-python -m brain --simulate
+python3 setup.py          # creates config.yaml + installs deps
+python3 -m brain --simulate
 ```
 
-Try:
-- `help` — list commands
-- `morning` — daily vitals check-in
-- `reset` — guided reset-60s
-- `hijacked` — autonomic spike runbook
-- `pacing start study 25` — 25-minute pacing block (CBT-CP)
-- `tier yellow` — switch tier (changes how the robot talks)
-- `come here` — simulate rolling to you
+With real voice on your laptop:
+
+```bash
+pip install edge-tts
+# Edit config.yaml: voice.tts_engine: edge
+python3 -m brain
+```
 
 ## Quick start (with hardware)
 
-See [docs/hardware.md](docs/hardware.md) for the full bill of materials and build tiers.
-
-Minimum rolling stack:
-1. Raspberry Pi 4/5 (4 GB+)
-2. USB conference mic + small powered speaker
-3. 2-wheel differential-drive chassis + motor HAT
-4. 12V battery pack (≥ 10 Ah)
-5. Optional: smart-plug for lamp dimming per `infrastructure/environment-defaults.md`
+See [docs/hardware.md](docs/hardware.md) and [docs/enclosure.md](docs/enclosure.md).
 
 ```bash
-# On the Pi
+# Raspberry Pi
 pip install -r requirements.txt
+pip install RPi.GPIO pyserial   # as needed
 cp config.example.yaml config.yaml
-# Edit config: set motor.driver to "gpio" or "serial", set your wake word
-python -m brain
+# Set motor.driver: gpio or serial
+python3 -m brain
 ```
 
-## Configuration
+Flash motor firmware: `firmware/scout-motor/scout-motor.ino` → Arduino/ESP32.
 
-Copy `config.example.yaml` → `config.yaml`:
+## Companion sync
+
+The robot runs a local sync server (default `http://0.0.0.0:8765/api/sync`).
+
+1. Start robot: `python3 -m brain` (sync starts automatically)
+2. In companion app → **More → Robot sync**
+3. **Push to robot** / **Pull from robot** to merge vitals & flares
+
+Merge is bidirectional by ID/date — nothing is deleted.
+
+## Configuration highlights (`config.yaml`)
 
 ```yaml
 robot:
-  name: "Scout"           # what you call it
-  wake_words: ["scout", "hey scout"]
+  name: Scout              # rename your aid here
 
 voice:
-  tts_engine: "console"   # console | edge | pyttsx3
-  stt_engine: "console"   # console | whisper | google
+  tts_engine: edge         # real voice
+  voice: en-US-JennyNeural
+  hybrid: true             # print + speak
 
 motor:
-  driver: "mock"          # mock | serial | gpio
+  driver: gpio             # mock | gpio | serial
 
-tier: "green"             # current day tier
-
-companion:
-  sync_url: ""            # optional: companion app export endpoint
+sync:
+  enabled: true
+  port: 8765
 ```
+
+## 3D-printable enclosure
+
+See [docs/enclosure.md](docs/enclosure.md). OpenSCAD source: `enclosure/scout-body.scad`.
+
+## Roadmap
+
+- [x] v0.1 — Terminal simulation, voice scripts, tier-aware responses
+- [x] v0.2 — Edge TTS, GPIO/serial motor drivers, companion sync, enclosure spec
+- [ ] v0.3 — Wake-word detection (Porcupine / openWakeWord)
+- [ ] v0.4 — Room waypoints via lidar or beacons
+- [ ] v0.5 — Smart-home hooks (dim lights, brown noise)
 
 ## Personality
 
@@ -120,44 +129,24 @@ See [docs/cbt-cp-mapping.md](docs/cbt-cp-mapping.md) for how VA guidebook sessio
 ```
 robot/
 ├── README.md
+├── setup.py                 # one-command setup
 ├── config.example.yaml
 ├── requirements.txt
 ├── docs/
 │   ├── hardware.md
+│   ├── enclosure.md
 │   ├── personality.md
 │   └── cbt-cp-mapping.md
+├── enclosure/
+│   └── scout-body.scad      # 3D-printable shell
+├── firmware/
+│   └── scout-motor/         # Arduino motor firmware
 └── brain/
-    ├── __main__.py          # python -m brain
-    ├── config.py
-    ├── state.py             # tier + session state
-    ├── router.py            # intent → skill
-    ├── voice/
-    │   ├── tts.py
-    │   ├── stt.py
-    │   └── orchestrator.py
-    ├── skills/
-    │   ├── morning_vitals.py
-    │   ├── guided_flow.py
-    │   ├── pacing.py
-    │   ├── flare_log.py
-    │   ├── shutdown.py
-    │   └── crisis.py
-    ├── motor/
-    │   ├── base.py
-    │   └── mock.py
-    ├── content/
-    │   └── flows.json       # scripts + runbooks (voice-ready)
-    └── data/
-        └── store.py         # local JSON persistence
+    ├── __main__.py
+    ├── sync_server.py       # companion ↔ robot API
+    ├── motor/               # mock | gpio | serial
+    └── ...
 ```
-
-## Roadmap
-
-- [x] v0.1 — Terminal simulation, voice scripts, tier-aware responses
-- [ ] v0.2 — Raspberry Pi GPIO motor driver, wake-word detection
-- [ ] v0.3 — Companion app sync over local network
-- [ ] v0.4 — Room waypoints (kitchen, desk, bedroom) via lidar or beacons
-- [ ] v0.5 — Smart-home hooks (dim lights, brown noise on sensory overload)
 
 ## License
 

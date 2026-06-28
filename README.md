@@ -36,17 +36,18 @@ See [companion/README.md](companion/README.md) for details.
 
 ## Assistive robot
 
-A rolling, talking robot brain lives in `robot/`. It voice-guides body-os runbooks/scripts and CBT-CP pacing/coping skills. Start in terminal simulation before buying hardware.
+A rolling, talking robot brain lives in `robot/`. Edge TTS voice, GPIO/serial motor drivers, companion sync, and a 3D-printable enclosure spec.
 
 ```bash
 cd robot
-python3 -m venv .venv && source .venv/bin/activate
-pip install -r requirements.txt
-cp config.example.yaml config.yaml
-python3 -m brain --simulate
+python3 setup.py              # config.yaml + deps
+python3 -m brain --simulate   # terminal mode
+python3 -m brain              # with voice + sync server
 ```
 
-See [robot/README.md](robot/README.md) and [robot/docs/hardware.md](robot/docs/hardware.md).
+Companion app → **More → Robot sync** to push/pull vitals and flares.
+
+See [robot/README.md](robot/README.md), [robot/docs/hardware.md](robot/docs/hardware.md), [robot/docs/enclosure.md](robot/docs/enclosure.md).
 
 ## Repo layout
 
@@ -115,4 +116,4 @@ Do not analyze. Do not optimize. Just log.
 
 ## Changelog
 
-- **v0.1** (2026-06-28) — Initial scaffold. SFN confirmed. Wild-yeast tolerance confirmed. Saddle stool in production. Sourdough workflow doc exists in Google Drive. Notion workspace built. Companion web app added. Assistive robot brain scaffold added.
+- **v0.1** (2026-06-28) — Initial scaffold. Companion web app. Assistive robot brain with Edge TTS, motor drivers, companion sync, enclosure spec.

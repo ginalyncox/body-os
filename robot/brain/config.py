@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import os
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
@@ -18,16 +17,24 @@ class RobotConfig:
     wake_words: list[str] = field(default_factory=lambda: ["scout", "hey scout"])
     personality: str = "sre"
     tier: str = "green"
-    tts_engine: str = "console"
+    tts_engine: str = "edge"
     stt_engine: str = "console"
     voice_rate: int = 150
     voice_volume: float = 0.8
+    voice_id: str = "en-US-JennyNeural"
+    voice_hybrid: bool = True
     motor_driver: str = "mock"
     motor_allowed_tiers: list[str] = field(default_factory=lambda: ["green", "yellow"])
     motor_max_speed: float = 0.3
+    motor_gpio_pins: dict[str, int] = field(default_factory=dict)
+    motor_serial_port: str = "/dev/ttyUSB0"
+    motor_serial_baud: int = 115200
     waypoints: dict[str, dict[str, float]] = field(default_factory=dict)
     data_dir: Path = field(default_factory=lambda: ROOT / "brain" / "data" / "local")
     crisis_keywords: list[str] = field(default_factory=list)
+    sync_enabled: bool = True
+    sync_host: str = "0.0.0.0"
+    sync_port: int = 8765
     raw: dict[str, Any] = field(default_factory=dict)
 
     @classmethod
@@ -49,6 +56,7 @@ class RobotConfig:
         robot = raw.get("robot", {})
         voice = raw.get("voice", {})
         motor = raw.get("motor", {})
+        sync = raw.get("sync", raw.get("companion", {}))
 
         data_dir = Path(raw.get("companion", {}).get("data_dir", "./brain/data/local"))
         if not data_dir.is_absolute():
@@ -59,21 +67,39 @@ class RobotConfig:
             wake_words=[w.lower() for w in robot.get("wake_words", ["scout"])],
             personality=robot.get("personality", "sre"),
             tier=raw.get("tier", "green"),
-            tts_engine=voice.get("ts_engine", voice.get("tts_engine", "console")),
+            tts_engine=voice.get("tts_engine", "edge"),
             stt_engine=voice.get("stt_engine", "console"),
             voice_rate=int(voice.get("rate", 150)),
             voice_volume=float(voice.get("volume", 0.8)),
+            voice_id=voice.get("voice", "en-US-JennyNeural"),
+            voice_hybrid=bool(voice.get("hybrid", True)),
             motor_driver=motor.get("driver", "mock"),
             motor_allowed_tiers=motor.get("allowed_tiers", ["green", "yellow"]),
             motor_max_speed=float(motor.get("max_speed", 0.3)),
+            motor_gpio_pins=motor.get("gpio_pins", {}),
+            motor_serial_port=motor.get("serial_port", "/dev/ttyUSB0"),
+            motor_serial_baud=int(motor.get("serial_baud", 115200)),
             waypoints=motor.get("waypoints", {}),
             data_dir=data_dir,
             crisis_keywords=crisis,
+            sync_enabled=bool(sync.get("enabled", True)),
+            sync_host=sync.get("host", "0.0.0.0"),
+            sync_port=int(sync.get("port", 8765)),
             raw=raw,
         )
 
+    def motor_config(self) -> Any:
+        from .motor import MotorConfig
+        return MotorConfig(
+            driver=self.motor_driver,
+            waypoints=self.waypoints,
+            max_speed=self.motor_max_speed,
+            gpio_pins=self.motor_gpio_pins or None,
+            serial_port=self.motor_serial_port,
+            serial_baud=self.motor_serial_baud,
+        )
+
     def tier_rate(self) -> int:
-        """Slow speech on harder days."""
         mult = {"green": 1.0, "yellow": 0.95, "red": 0.8, "black": 0.7}
         return int(self.voice_rate * mult.get(self.tier, 1.0))
 
@@ -82,9 +108,10 @@ class RobotConfig:
 
     def save_tier(self, tier: str) -> None:
         self.tier = tier
-        if DEFAULT_CONFIG.exists():
-            with open(DEFAULT_CONFIG) as f:
+        path = DEFAULT_CONFIG if DEFAULT_CONFIG.exists() else EXAMPLE_CONFIG
+        if path.exists():
+            with open(path) as f:
                 raw = yaml.safe_load(f) or {}
             raw["tier"] = tier
-            with open(DEFAULT_CONFIG, "w") as f:
+            with open(path, "w") as f:
                 yaml.dump(raw, f, default_flow_style=False)

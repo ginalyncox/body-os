@@ -52,11 +52,3 @@ class MockMotor(MotorDriver):
     @property
     def is_moving(self) -> bool:
         return self._moving
-
-
-def create_motor(driver: str, waypoints: dict | None = None) -> MotorDriver:
-    if driver == "mock":
-        return MockMotor(waypoints)
-    # gpio / serial drivers are v0.2
-    print(f"Motor driver '{driver}' not implemented yet; using mock.")
-    return MockMotor(waypoints)
