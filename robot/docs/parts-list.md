@@ -17,6 +17,28 @@ Nothing to buy.
 
 ---
 
+## Phase P — Purse Scout (~$120–180) **recommended first**
+
+Portable: LTE + GPS + emergency button. Fits a purse. No Wi‑Fi required.
+
+| Part | Qty | Est. | Example / spec |
+|------|-----|------|----------------|
+| **Raspberry Pi Zero 2 W** or **Pi 4 (4 GB)** | 1 | $15–80 | Zero = smaller purse |
+| **microSD** 32 GB+ | 1 | $8 | Raspberry Pi OS |
+| **SIM7600G-H LTE HAT** (voice + GPS) | 1 | $50–70 | Waveshare or Sixfab |
+| **SIM card** (voice plan) | 1 | $10/mo | Must support voice — not data-only IoT |
+| **USB-C power bank** 5000–10 Ah | 1 | $25 | Pass-through charging |
+| **Red emergency button** | 1 | $5 | Panel mount → GPIO 27 |
+| **Mini USB mic** | 1 | $15 | Or ReSpeaker 2-Mic HAT on Zero |
+| **Small speaker** | 1 | $15 | USB or HAT amp |
+| **Soft pouch** + inner plate | 1 | $15 | Purse / cross-body |
+
+**Subtotal:** ~$120–180
+
+See [purse-portable.md](docs/purse-portable.md) and [emergency.md](docs/emergency.md).
+
+---
+
 ## Phase 1 — Stationary Scout (~$95–130)
 
 Talks, syncs with companion app, mutual care. Sits on desk or nightstand.

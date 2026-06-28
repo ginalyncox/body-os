@@ -1,8 +1,11 @@
 # body-os assistive robot configuration
 # Copy: cp config.example.yaml config.yaml
-# Scope: IN-HOME ONLY (kitchen, desk, bedroom — hard floors)
+# Primary build: portable purse Scout (LTE + GPS + emergency)
+# Optional: rolling in-home dock — see docs/inhome-build.md
 
-environment: inhome   # inhome only — outdoor disabled
+environment: portable   # portable | inhome
+
+form_factor: portable   # portable = purse/carry | rolling = wheels + dock
 
 robot:
   name: Scout
@@ -14,7 +17,7 @@ robot:
 tier: green  # green | yellow | red | black
 
 voice:
-  tts_engine: edge       # console | edge | pyttsx3
+  tts_engine: pyttsx3      # offline — no Wi-Fi needed in purse
   stt_engine: console    # console | whisper | google
   voice: en-US-JennyNeural
   hybrid: true           # print + speak (recommended for development)
@@ -54,9 +57,9 @@ chassis:
   type: differential   # differential | gyrosphere (indoor only if ever)
 
 sync:
-  enabled: true
-  host: 0.0.0.0
-  port: 8765
+  enabled: false         # optional — Wi-Fi sync when home; not required for safety
+  # host: 0.0.0.0
+  # port: 8765
 
 schedule:
   morning_vitals: "08:00"
@@ -69,6 +72,19 @@ daily_tasks:
   min_minutes_between: 60    # don't repeat the same nudge within this window
   nudge_on_red: true         # survival floor: bathroom, teeth once, water, meds
   nudge_on_black: false      # set true only if you want water/meds/bathroom whispers
+
+# Cellular SMS nudges (optional — same SIM7600 HAT as emergency)
+sms:
+  enabled: false
+  nudges: true
+  nudges_while_charging: true
+  voice_also: false
+
+# Emergency: 911, 988, contacts + GPS — see emergency.example.yaml
+emergency:
+  enabled: true
+  dry_run: true              # KEEP true until hardware tested with your own phone
+  config_path: ./emergency.example.yaml
 
 companion:
   data_dir: ./brain/data/local

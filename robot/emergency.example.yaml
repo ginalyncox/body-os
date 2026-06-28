@@ -1,0 +1,56 @@
+# Scout emergency — copy to emergency.yaml and fill when regulated
+# Past-you writes scripts; Scout only plays them. Test with dry_run: true first.
+
+enabled: true
+dry_run: true                    # true = log only, no real calls until hardware verified
+
+# Physical red button (GPIO BCM). Hold to trigger without voice.
+button:
+  enabled: true
+  gpio: 27
+  hold_seconds: 2
+  active_low: true               # button connects GPIO to GND
+
+# Cancel window for voice-triggered emergencies (not button hold)
+cancel_window_seconds: 10
+
+# When GNSS has no fix (indoor / purse), use this text in SMS and voice scripts
+gps_fallback_address: ""
+human_name: ""                   # your name — included in outbound messages
+medical_context: |
+  Small fiber neuropathy. Autonomic dysregulation possible.
+  May need to lie down. Sensory sensitivity.
+
+cellular:
+  driver: mock                   # mock | sim7600
+  serial_port: /dev/ttyUSB1      # LTE HAT — separate from motor serial if any
+  serial_baud: 115200
+
+numbers:
+  ems: "911"
+  mental_health: "988"
+
+# Order matters — SMS with GPS map link first, then optional voice call
+contacts:
+  - name: Emergency contact 1
+    phone: "+15555550100"
+    sms_first: true
+    voice_call: true
+  - name: Emergency contact 2
+    phone: "+15555550101"
+    sms_first: true
+    voice_call: false
+
+scripts:
+  sms_contact: |
+    {name} EMERGENCY ({human_name}). Scout purse alert.
+    GPS: https://maps.google.com/?q={lat},{lon}
+    {address_line}
+    {medical_context}
+  voice_ems: |
+    Medical emergency. {human_name} needs help.
+    {medical_context}
+    GPS coordinates {lat}, {lon}. {address_line}
+  voice_mental_health: |
+    Mental health crisis. {human_name} needs support.
+    Please connect to crisis counselor.

@@ -9,6 +9,8 @@ from pathlib import Path
 from .autonomy.care_loop import build_care_loop
 from .config import RobotConfig
 from .data.store import DataStore
+from .emergency.button import EmergencyButtonMonitor
+from .emergency.settings import load_emergency_settings
 from .router import Router
 from .sync_server import run_sync_server
 
@@ -30,6 +32,17 @@ def main(argv: list[str] | None = None) -> int:
         sync_srv = run_sync_server(config, store, config.sync_host, config.sync_port)
 
     router = Router(config)
+    emergency_button = None
+
+    if config.emergency_enabled:
+        settings = load_emergency_settings(config.emergency_config_path)
+        settings.enabled = True
+        settings.dry_run = config.emergency_dry_run
+        emergency_button = EmergencyButtonMonitor(
+            settings,
+            on_trigger=router.trigger_emergency_button,
+        )
+        emergency_button.start()
 
     if args.autonomy or config.autonomy_enabled:
         care_loop = build_care_loop(router)
@@ -43,6 +56,11 @@ def main(argv: list[str] | None = None) -> int:
         print(f"Companion sync: http://127.0.0.1:{config.sync_port}/api/sync")
     if care_loop:
         print("Autonomy: mutual care loop active (battery + vitals)")
+    if config.emergency_enabled:
+        mode = "dry-run" if config.emergency_dry_run else "LIVE"
+        print(f"Emergency: enabled ({mode}) — button + call 911/988")
+    if config.form_factor == "portable":
+        print("Form factor: portable (purse / carry)")
     print()
 
     try:
@@ -55,6 +73,8 @@ def main(argv: list[str] | None = None) -> int:
     finally:
         if care_loop:
             care_loop.stop()
+        if emergency_button:
+            emergency_button.stop()
         if hasattr(router.motor, "cleanup"):
             router.motor.cleanup()
         if sync_srv:

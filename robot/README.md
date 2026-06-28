@@ -1,10 +1,11 @@
 # body-os Assistive Robot
 
-A rolling, talking **in-home** assistive aid that runs **body-os** protocols and **CBT-CP** skills — kitchen, desk, bedroom, not patio or yard.
+A talking **body-os** companion — **purse-portable** with LTE + GPS + 911/988, or optional **in-home** rolling dock.
 
 > *"Logs before analysis. Runbooks over improvisation."* — but spoken, at 2 AM, when you can't read a screen.
 
-**Build path:** [docs/inhome-build.md](docs/inhome-build.md) · **Parts:** [docs/parts-list.md](docs/parts-list.md)
+**Primary build:** [docs/purse-portable.md](docs/purse-portable.md) · **Emergency:** [docs/emergency.md](docs/emergency.md)  
+**In-home rolling (optional):** [docs/inhome-build.md](docs/inhome-build.md) · **Parts:** [docs/parts-list.md](docs/parts-list.md)
 
 ## What this robot does
 
