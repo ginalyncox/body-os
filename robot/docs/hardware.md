@@ -122,11 +122,27 @@ Use Home Assistant MQTT or Kasa local API — wired in v0.5 roadmap.
 
 ---
 
+## Salvage path — Xbox 360 pile ($0 enclosure + sensors)
+
+If you have old Xbox 360 consoles, **don't use them as the brain** — use them as parts:
+
+| Salvage | Scout role |
+|---------|------------|
+| Kinect for Xbox 360 | Find you in the room, obstacle depth |
+| Gutted console shell | Rounded robot body |
+| Power brick | Charging dock 12 V supply |
+| Controller + USB adapter | Manual override / e-stop |
+
+Full guide: [xbox360-salvage.md](xbox360-salvage.md)
+
+---
+
 ## Student budget path
 
 1. Week 1–2: Tier 0 simulation on laptop
 2. Month 1: Tier 1 Pi + speaker at desk (~$100)
-3. When skills feel right: motor kit + battery (~$150 more)
-4. Iterate enclosure with makerspace 3D printer
+3. **Salvage:** gut one 360 shell + Kinect if you have it (~$10 USB adapter only)
+4. When skills feel right: motor kit + battery (~$150 more)
+5. Iterate enclosure — or skip 3D print and use the 360 shell
 
 Borrow a Pi from your university CS/EE lab if available — many have loaner hardware programs.
