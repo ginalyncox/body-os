@@ -24,11 +24,23 @@ This repo is the version-controlled source of truth for that framework. The Noti
 - **SLOs, not SLAs.** Service-level *objectives* for yourself. Missing one is data, not failure.
 - **The fridge is the pause button.** Sourdough, work, life — anything can be paused. Use it without guilt.
 
+## Companion app
+
+A local-first web app lives in `companion/`. It implements Daily Vitals, Flare Log, guided scripts/runbooks, tier protocols, and SLO tracking — all stored in your browser.
+
+```bash
+cd companion && npm install && npm run dev
+```
+
+See [companion/README.md](companion/README.md) for details.
+
 ## Repo layout
 
 ```
 body-os/
 ├── README.md                    ← you are here
+├── companion/                   ← web companion app (Vite + React)
+├── render.yaml                  ← optional Render static site deploy
 ├── observability/
 │   └── schemas.md               ← database schemas (Flare Log, Daily Vitals, etc.)
 ├── protocols/
@@ -88,4 +100,4 @@ Do not analyze. Do not optimize. Just log.
 
 ## Changelog
 
-- **v0.1** (2026-06-28) — Initial scaffold. SFN confirmed. Wild-yeast tolerance confirmed. Saddle stool in production. Sourdough workflow doc exists in Google Drive. Notion workspace built.
+- **v0.1** (2026-06-28) — Initial scaffold. SFN confirmed. Wild-yeast tolerance confirmed. Saddle stool in production. Sourdough workflow doc exists in Google Drive. Notion workspace built. Companion web app added.
