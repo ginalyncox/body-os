@@ -34,12 +34,25 @@ cd companion && npm install && npm run dev
 
 See [companion/README.md](companion/README.md) for details.
 
+## Assistive robot (in-home only)
+
+A rolling, talking robot brain for **indoor** use — kitchen, desk, bedroom. Voice runbooks, mutual care, charging dock, companion sync.
+
+```bash
+cd robot
+python3 setup.py
+python3 -m brain --autonomy
+```
+
+**Build guide:** [robot/docs/inhome-build.md](robot/docs/inhome-build.md)
+
 ## Repo layout
 
 ```
 body-os/
 ├── README.md                    ← you are here
 ├── companion/                   ← web companion app (Vite + React)
+├── robot/                       ← assistive robot brain (Python)
 ├── render.yaml                  ← optional Render static site deploy
 ├── observability/
 │   └── schemas.md               ← database schemas (Flare Log, Daily Vitals, etc.)
@@ -100,4 +113,4 @@ Do not analyze. Do not optimize. Just log.
 
 ## Changelog
 
-- **v0.1** (2026-06-28) — Initial scaffold. SFN confirmed. Wild-yeast tolerance confirmed. Saddle stool in production. Sourdough workflow doc exists in Google Drive. Notion workspace built. Companion web app added.
+- **v0.1** (2026-06-28) — Initial scaffold. Companion web app. Assistive robot brain with Edge TTS, motor drivers, companion sync, enclosure spec.

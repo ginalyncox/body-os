@@ -1,0 +1,100 @@
+{
+  "tasks": [
+    {
+      "id": "vitals",
+      "label": "Daily vitals",
+      "nudge": "Sixty second vitals. Pain, energy, tier.",
+      "tiers": ["green", "yellow", "red", "black"],
+      "times": ["08:00"],
+      "kind": "once"
+    },
+    {
+      "id": "water",
+      "label": "Water",
+      "nudge": "Sip water. Even a few ounces counts.",
+      "tiers": ["green", "yellow", "red", "black"],
+      "times": ["09:00", "11:00", "13:00", "15:00", "17:00", "19:00"],
+      "kind": "slots"
+    },
+    {
+      "id": "meds",
+      "label": "Meds",
+      "nudge": "Meds time, if today's protocol includes them.",
+      "tiers": ["green", "yellow", "red", "black"],
+      "times": ["08:30"],
+      "kind": "once"
+    },
+    {
+      "id": "bathroom",
+      "label": "Bathroom",
+      "nudge": "Bathroom break. Minimum complete.",
+      "tiers": ["green", "yellow", "red", "black"],
+      "times": ["09:30", "14:00", "20:00"],
+      "kind": "slots"
+    },
+    {
+      "id": "teeth",
+      "label": "Brush teeth",
+      "nudge": "Teeth. Even a quick brush counts on a hard day.",
+      "tiers": ["green", "yellow", "red"],
+      "times": ["09:00", "21:00"],
+      "kind": "slots"
+    },
+    {
+      "id": "face",
+      "label": "Wash face",
+      "nudge": "Cool or lukewarm water on your face. One minute.",
+      "tiers": ["green", "yellow", "red"],
+      "times": ["09:15"],
+      "kind": "once"
+    },
+    {
+      "id": "meal_am",
+      "label": "Morning food",
+      "nudge": "Something small for the morning. Body first.",
+      "tiers": ["green", "yellow", "red"],
+      "times": ["09:00"],
+      "kind": "once"
+    },
+    {
+      "id": "meal_mid",
+      "label": "Midday food",
+      "nudge": "Midday fuel. Small is fine.",
+      "tiers": ["green", "yellow", "red"],
+      "times": ["13:00"],
+      "kind": "once"
+    },
+    {
+      "id": "meal_pm",
+      "label": "Evening food",
+      "nudge": "Evening food. Two small meals or four snacks on red days.",
+      "tiers": ["green", "yellow", "red"],
+      "times": ["18:00"],
+      "kind": "once"
+    },
+    {
+      "id": "reset_mid",
+      "label": "Midday reset",
+      "nudge": "Five minute reset. Say reset5 when ready.",
+      "tiers": ["green", "yellow"],
+      "times": ["13:00"],
+      "kind": "once"
+    },
+    {
+      "id": "reset_deep",
+      "label": "Reset-deep before bed",
+      "nudge": "Reset-deep before sleep. Mandatory on yellow and red.",
+      "tiers": ["green", "yellow", "red"],
+      "times": ["21:30"],
+      "kind": "once"
+    },
+    {
+      "id": "shutdown",
+      "label": "Shutdown script",
+      "nudge": "Shutdown script. Close the day. Say shutdown.",
+      "tiers": ["green", "yellow", "red", "black"],
+      "times": ["22:00"],
+      "kind": "once"
+    }
+  ]
+}

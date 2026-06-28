@@ -1,0 +1,82 @@
+# body-os assistive robot configuration
+# Copy: cp config.example.yaml config.yaml
+# Scope: IN-HOME ONLY (kitchen, desk, bedroom — hard floors)
+
+environment: inhome   # inhome only — outdoor disabled
+
+robot:
+  name: Scout
+  wake_words:
+    - scout
+    - hey scout
+  personality: sre  # sre | gentle | minimal
+
+tier: green  # green | yellow | red | black
+
+voice:
+  tts_engine: edge       # console | edge | pyttsx3
+  stt_engine: console    # console | whisper | google
+  voice: en-US-JennyNeural
+  hybrid: true           # print + speak (recommended for development)
+  rate: 150
+  volume: 0.8
+
+motor:
+  driver: mock           # mock | gpio | serial
+  allowed_tiers:
+    - green
+    - yellow
+  max_speed: 0.3         # m/s cap — indoor only
+  waypoints:
+    dock: { x: 0.0, y: 0.0 }      # charge dock (bedroom or desk)
+    desk: { x: 1.0, y: 0.0 }
+    kitchen: { x: 3.0, y: 2.0 }   # near saddle stool
+    bedroom: { x: 0.5, y: 4.0 }
+
+autonomy:
+  enabled: true
+  check_interval_seconds: 30
+  proactive: true
+  mutual_care: true
+  roll_when_charging: true
+
+battery:
+  driver: mock              # mock | ina219
+  mock_percent: 85
+  mock_charging: false
+
+# Indoor thermal — Pi fan sufficient; no shade-seeking
+thermal:
+  pi_max_c: 80
+  fan_gpio: 18
+
+chassis:
+  type: differential   # differential | gyrosphere (indoor only if ever)
+
+sync:
+  enabled: true
+  host: 0.0.0.0
+  port: 8765
+
+schedule:
+  morning_vitals: "08:00"
+  shutdown: "22:00"
+  midday_reset: "13:00"
+
+# Tier-aware nudges for minimum daily completes (hygiene, water, meds, food)
+daily_tasks:
+  enabled: true
+  min_minutes_between: 60    # don't repeat the same nudge within this window
+  nudge_on_red: true         # survival floor: bathroom, teeth once, water, meds
+  nudge_on_black: false      # set true only if you want water/meds/bathroom whispers
+
+companion:
+  data_dir: ./brain/data/local
+
+meds:
+  enabled: false
+  reminders: []
+
+# --- OUT OF SCOPE (do not enable) ---
+# outdoor.enabled: false
+# See docs/gyrosphere-outdoor.md if revisiting later

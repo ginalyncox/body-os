@@ -1,0 +1,8 @@
+pyyaml>=6.0
+edge-tts>=6.1.0
+
+# Optional — install on robot hardware as needed:
+# pyserial>=3.5          # serial motor driver
+# pyttsx3>=2.90          # offline TTS
+# RPi.GPIO               # Pi only: pip install RPi.GPIO
+# pygame>=2.5            # audio playback fallback
