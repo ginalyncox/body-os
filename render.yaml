@@ -1,0 +1,10 @@
+services:
+  - type: web
+    name: body-os-companion
+    runtime: static
+    buildCommand: cd companion && npm install && npm run build
+    staticPublishPath: companion/dist
+    headers:
+      - path: /*
+        name: Cache-Control
+        value: public, max-age=0, must-revalidate
