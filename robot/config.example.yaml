@@ -1,0 +1,40 @@
+# body-os assistive robot configuration
+# Copy to config.yaml and customize
+
+robot:
+  name: Scout
+  wake_words:
+    - scout
+    - hey scout
+  personality: sre  # sre | gentle | minimal
+
+tier: green  # green | yellow | red | black
+
+voice:
+  tts_engine: console  # console | edge | pyttsx3
+  stt_engine: console  # console | whisper | google
+  rate: 150
+  volume: 0.8
+
+motor:
+  driver: mock  # mock | serial | gpio
+  allowed_tiers:
+    - green
+    - yellow
+  max_speed: 0.3  # m/s cap
+  waypoints:
+    desk: { x: 1.0, y: 0.0 }
+    kitchen: { x: 3.0, y: 2.0 }
+    bedroom: { x: 0.5, y: 4.0 }
+
+schedule:
+  morning_vitals: "08:00"
+  shutdown: "22:00"
+  midday_reset: "13:00"  # green days only
+
+companion:
+  data_dir: ./brain/data/local
+
+meds:
+  enabled: false
+  reminders: []

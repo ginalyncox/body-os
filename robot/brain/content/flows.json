@@ -1,0 +1,160 @@
+{
+  "flows": [
+    {
+      "id": "reset-60s",
+      "title": "reset-60s",
+      "type": "script",
+      "trigger": "Mild flare severity 4 or below",
+      "steps": [
+        "Sit down. Hands rested on thighs, not gripping.",
+        "Physiological sigh times four. Double inhale through nose, long exhale through mouth.",
+        "Name three things you feel. Fabric, breath, seat.",
+        "Say: My nervous system is doing a lot. I am being gentle with it.",
+        "Sip water."
+      ],
+      "success": ["A natural exhale or yawn", "You can name what you were doing before"],
+      "fallback": "reset-5min"
+    },
+    {
+      "id": "reset-5min",
+      "title": "reset-5min",
+      "type": "script",
+      "trigger": "Moderate flare severity 5 to 7",
+      "steps": [
+        "Minute one. Settle. Sit or recline. Hands palm-down. Eyes soft.",
+        "Minute two. Breath. Four in, six out. Exhales longer than inhales.",
+        "Minute three. Body scan. Head to feet. Notice without changing.",
+        "Minute four. One small care. Water, temperature, blanket, or dim light.",
+        "Minute five. Reentry. Say your choice out loud: continue, switch, or stop."
+      ],
+      "success": ["Heart rate slower", "One need met", "Clear choice without second-guessing"],
+      "fallback": "reset-deep"
+    },
+    {
+      "id": "reset-deep",
+      "title": "reset-deep",
+      "type": "script",
+      "trigger": "Severity 8 to 10 or two failed reset-5min attempts",
+      "steps": [
+        "Body horizontal. Knees supported if helpful. Hands on belly.",
+        "Long exhale breath. Four in, eight out. Five minutes minimum.",
+        "Temperature regulation. Blanket, socks, or cool cloth on forehead.",
+        "Weighted blanket or compression if it feels good. Remove if worse.",
+        "No content. Sound only or silence.",
+        "Stay at least twenty minutes, even if you feel better at ten.",
+        "Reentry. Sleep, rest, or one low-load activity. No work."
+      ],
+      "success": ["Body feels heavier", "Deep sigh or yawn", "Pain or activation drops 2 points"],
+      "fallback": "black protocol"
+    },
+    {
+      "id": "shutdown",
+      "title": "shutdown",
+      "type": "script",
+      "trigger": "Within 30 minutes of bedtime",
+      "steps": [
+        "Close open loops. Save work. Close the laptop.",
+        "Phone on airplane mode or Do Not Disturb. Charging across the room.",
+        "Water by the bed. Lukewarm.",
+        "Teeth. Even a quick brush.",
+        "One sentence out loud about today. Not an evaluation, just a fact.",
+        "One sentence about tomorrow's first move. A single step only.",
+        "Lights off.",
+        "Reset-deep breathing. Four in, eight out. Five minutes while horizontal."
+      ],
+      "success": ["The day is over", "Body knows it may sleep"]
+    },
+    {
+      "id": "hijacked",
+      "title": "Hijacked",
+      "type": "runbook",
+      "trigger": "Autonomic spike",
+      "steps": [
+        "Say out loud: My nervous system is firing. This is not danger. This is a wave.",
+        "Sit or lie down. Standing extends the spike.",
+        "Cool-ish water on wrists or face for twenty seconds. Not ice.",
+        "Physiological sigh times six.",
+        "Name what's around you. Five see, four touch, three hear. Out loud.",
+        "No decisions. No texts, posts, or commits."
+      ],
+      "success": ["Heart rate slows", "Natural yawn", "Can name the day of the week"],
+      "do_not": ["Push through", "Caffeine", "Doomscroll", "Self-criticize"]
+    },
+    {
+      "id": "pain-spike",
+      "title": "Pain Spike",
+      "type": "runbook",
+      "trigger": "Sudden burning, stabbing, or electrical pain",
+      "steps": [
+        "Posture check. Standing? Sit. Sitting tense? Recline.",
+        "Temperature match. Cool if hot. Lukewarm if icy. Never extreme.",
+        "Light compression test. Soft sock or weighted blanket. Remove if worse.",
+        "Breath. Four in, seven out.",
+        "Visualize the area as warm and neutral, not as the pain location.",
+        "Tiny movement. Ankle circles, finger fan, or slow jaw opens."
+      ],
+      "success": ["Pain drops at least 1 point in 10 minutes"]
+    },
+    {
+      "id": "itch-flare",
+      "title": "Itch Flare",
+      "type": "runbook",
+      "trigger": "Sudden skin itch",
+      "steps": [
+        "Remove contact source. Wash cool then warm soapy water.",
+        "Do not scratch. Press firmly with a flat palm.",
+        "Cool damp cloth for sixty to one-twenty seconds.",
+        "If SFN-likely: phantom itch, nerves are noisy. Do not engage.",
+        "Distraction. Different sensory channel.",
+        "Unscented lotion if skin tolerates."
+      ],
+      "success": ["Itch drops 2 points in 5 minutes", "No skin breakage"]
+    },
+    {
+      "id": "sensory-overload",
+      "title": "Sensory Overload",
+      "type": "runbook",
+      "trigger": "Too loud, bright, or much",
+      "steps": [
+        "Reduce one input. Close eyes, cover ears, or step out.",
+        "Find low-load space.",
+        "Earplugs, hood, or sunglasses.",
+        "Sit. Eyes soft.",
+        "One breath. Four in, eight out.",
+        "Five minutes minimum before reentering."
+      ],
+      "success": ["Tolerance returns", "Brain tracks one thread again"]
+    },
+    {
+      "id": "doom-loop",
+      "title": "Doom Loop",
+      "type": "runbook",
+      "trigger": "Thought spiral",
+      "steps": [
+        "Name it: I am in a doom loop. The thoughts are real but not accurate right now.",
+        "Body check first. When did you last eat, drink, sleep, pee?",
+        "Take care of one body need.",
+        "Change the input channel. Different room, background sound, open window.",
+        "Do not problem-solve the thoughts. Wait them out from a regulated body.",
+        "Talk to a human if safe, to be witnessed.",
+        "Nine eight eight if anything tips toward not wanting to be here."
+      ],
+      "success": ["Thoughts soften from absolute to relative", "One body need met"],
+      "do_not": ["Debate the thoughts", "Make big decisions", "Self-criticize"]
+    }
+  ],
+  "crisis_keywords": [
+    "kill myself",
+    "want to die",
+    "end it",
+    "not worth living",
+    "hurt myself",
+    "suicide"
+  ],
+  "waypoints": {
+    "desk": "Home desk / study area",
+    "kitchen": "Kitchen / saddle stool",
+    "bedroom": "Bedroom / rest area",
+    "user": "Your current location"
+  }
+}

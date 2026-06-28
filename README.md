@@ -34,12 +34,27 @@ cd companion && npm install && npm run dev
 
 See [companion/README.md](companion/README.md) for details.
 
+## Assistive robot
+
+A rolling, talking robot brain lives in `robot/`. It voice-guides body-os runbooks/scripts and CBT-CP pacing/coping skills. Start in terminal simulation before buying hardware.
+
+```bash
+cd robot
+python3 -m venv .venv && source .venv/bin/activate
+pip install -r requirements.txt
+cp config.example.yaml config.yaml
+python3 -m brain --simulate
+```
+
+See [robot/README.md](robot/README.md) and [robot/docs/hardware.md](robot/docs/hardware.md).
+
 ## Repo layout
 
 ```
 body-os/
 ├── README.md                    ← you are here
 ├── companion/                   ← web companion app (Vite + React)
+├── robot/                       ← assistive robot brain (Python)
 ├── render.yaml                  ← optional Render static site deploy
 ├── observability/
 │   └── schemas.md               ← database schemas (Flare Log, Daily Vitals, etc.)
@@ -100,4 +115,4 @@ Do not analyze. Do not optimize. Just log.
 
 ## Changelog
 
-- **v0.1** (2026-06-28) — Initial scaffold. SFN confirmed. Wild-yeast tolerance confirmed. Saddle stool in production. Sourdough workflow doc exists in Google Drive. Notion workspace built. Companion web app added.
+- **v0.1** (2026-06-28) — Initial scaffold. SFN confirmed. Wild-yeast tolerance confirmed. Saddle stool in production. Sourdough workflow doc exists in Google Drive. Notion workspace built. Companion web app added. Assistive robot brain scaffold added.
