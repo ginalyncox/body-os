@@ -124,16 +124,26 @@ Use Home Assistant MQTT or Kasa local API — wired in v0.5 roadmap.
 
 ## Salvage path — Xbox 360 pile ($0 enclosure + sensors)
 
-If you have old Xbox 360 consoles, **don't use them as the brain** — use them as parts:
+If you have old Xbox 360 consoles, **don't use them as the brain** — use them as parts for **indoor / porch dock** builds:
 
 | Salvage | Scout role |
 |---------|------------|
-| Kinect for Xbox 360 | Find you in the room, obstacle depth |
-| Gutted console shell | Rounded robot body |
+| Kinect for Xbox 360 | Find you in the room (indoor) |
+| Gutted console shell | Indoor robot body |
 | Power brick | Charging dock 12 V supply |
 | Controller + USB adapter | Manual override / e-stop |
 
+**Gyrosphere?** 360 shells are the wrong shape — see [gyrosphere-outdoor.md](gyrosphere-outdoor.md). Keep the brick for the **porch dock**.
+
 Full guide: [xbox360-salvage.md](xbox360-salvage.md)
+
+---
+
+## Gyrosphere outdoor path
+
+Want a **rolling ball** that goes **outside**? Different chassis, same Scout brain.
+
+- [gyrosphere-outdoor.md](gyrosphere-outdoor.md) — pendulum drive, weather, patio geofence, SFN-aware limits
 
 ---
 

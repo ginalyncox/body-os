@@ -120,6 +120,7 @@ Docs:
 - [docs/mutual-care.md](docs/mutual-care.md) — relationship model
 - [docs/autonomy.md](docs/autonomy.md) — how Scout acts alone
 - [docs/charging-dock.md](docs/charging-dock.md) — self-charging hardware
+- [docs/gyrosphere-outdoor.md](docs/gyrosphere-outdoor.md) — outdoor rolling ball chassis
 
 ```bash
 # Simulate low battery → Scout seeks dock

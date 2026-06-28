@@ -53,6 +53,17 @@ battery:
   mock_charging: false
   # Test low battery: mock_percent: 22
 
+outdoor:
+  enabled: false
+  max_tier: yellow
+  max_minutes: 20
+  porch_dock_waypoint: dock
+
+# Gyrosphere chassis (roadmap — pendulum drive firmware)
+chassis:
+  type: differential   # differential | gyrosphere
+  sphere_diameter_cm: 50
+
 sync:
   enabled: true
   host: 0.0.0.0
