@@ -64,6 +64,13 @@ chassis:
   type: differential   # differential | gyrosphere
   sphere_diameter_cm: 50
 
+thermal:
+  pi_max_c: 78
+  internal_max_c: 45
+  fan_gpio: 18           # optional PWM fan
+  seek_shade_at_c: 70    # roll to porch dock / shade waypoint
+  shutdown_at_c: 85
+
 sync:
   enabled: true
   host: 0.0.0.0

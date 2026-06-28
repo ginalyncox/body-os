@@ -47,7 +47,7 @@ Research keywords: *pendulum-driven spherical robot*, *BB-8 internal mechanism* 
 |--------|------------------|
 | **Rain / dew** | IP54 minimum (splash); sealed cable glands; mic port with Gore vent |
 | **Dust / pollen** | Filter on vents; SFN note: pollen is a flare trigger — document it |
-| **Sun / heat** | Light shell color; internal fan; Pi throttle at 80°C → stop motors |
+| **Sun / heat** | Light shell; heat pipes / thermosiphon; thermal autonomy → porch | See [thermal-cooling.md](thermal-cooling.md) |
 | **Cold** | LiFePO₄ battery (better than LiPo in cold); shorten outdoor sessions |
 | **Grass / mulch** | Sphere diameter ≥ 50 cm or it buries in soft ground |
 | **Gravel / sidewalk gaps** | Mass + traction; internal pendulum needs torque |
