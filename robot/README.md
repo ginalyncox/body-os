@@ -4,7 +4,7 @@ A rolling, talking **in-home** assistive aid that runs **body-os** protocols and
 
 > *"Logs before analysis. Runbooks over improvisation."* — but spoken, at 2 AM, when you can't read a screen.
 
-**Build path:** [docs/inhome-build.md](docs/inhome-build.md) ← start here
+**Build path:** [docs/inhome-build.md](docs/inhome-build.md) · **Parts:** [docs/parts-list.md](docs/parts-list.md)
 
 ## What this robot does
 
