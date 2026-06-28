@@ -95,11 +95,15 @@ def postmortem_to_companion(entry: dict[str, Any]) -> dict[str, Any]:
 
 
 def companion_bundle_to_robot(bundle: dict[str, Any]) -> dict[str, list[dict[str, Any]]]:
-    return {
+    out: dict[str, Any] = {
         "vitals": [vitals_to_robot(v) for v in bundle.get("vitals", [])],
         "flares": [flare_to_robot(f) for f in bundle.get("flares", [])],
         "postmortems": bundle.get("postmortems", []),
     }
+    daily = bundle.get("dailyCompletions", bundle.get("daily_completions"))
+    if daily:
+        out["daily_completions"] = daily
+    return out
 
 
 def robot_bundle_to_companion(store_export: dict[str, Any]) -> dict[str, Any]:
@@ -108,4 +112,5 @@ def robot_bundle_to_companion(store_export: dict[str, Any]) -> dict[str, Any]:
         "vitals": [vitals_to_companion(v) for v in store_export.get("vitals", [])],
         "flares": [flare_to_companion(f) for f in store_export.get("flares", [])],
         "postmortems": [postmortem_to_companion(p) for p in store_export.get("postmortems", [])],
+        "dailyCompletions": store_export.get("daily_completions", store_export.get("dailyCompletions", {})),
     }

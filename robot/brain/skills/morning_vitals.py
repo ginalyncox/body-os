@@ -60,6 +60,7 @@ class MorningVitalsSkill:
             "morning_energy": energy,
             "autonomic_state": autonomic,
         })
+        store.mark_task_done("vitals")
 
         voice.say(
             f"Logged. {tier.capitalize()} day. "

@@ -6,8 +6,8 @@ import { KNOWN_TRIGGERS, SLOS, PROTOCOLS } from '../data/content'
 import { Card, Button, Textarea, TierBadge, PageHeader, Input } from '../components/ui'
 
 export function MorePage() {
-  const { data, addPostmortem, exportData, importData, clearData } = useAppData()
-  const robot = useRobotSync(data, importData)
+  const { data, addPostmortem, exportData, importData, clearData, mergeRobotData } = useAppData()
+  const robot = useRobotSync(data, mergeRobotData)
   const [showPmForm, setShowPmForm] = useState(false)
   const [pmText, setPmText] = useState({
     date: new Date().toISOString().slice(0, 10),

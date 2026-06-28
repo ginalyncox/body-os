@@ -1,5 +1,11 @@
 export type Tier = 'green' | 'yellow' | 'red' | 'black'
 
+export interface DailyCompletions {
+  date: string
+  done: Record<string, string[]>
+  nudged?: Record<string, string>
+}
+
 export type AutonomicState = 'Calm' | 'Edgy' | 'Activated' | 'Hijacked'
 
 export type PrimarySymptom =
@@ -90,6 +96,7 @@ export interface AppData {
   vitals: DailyVitals[]
   flares: FlareLog[]
   postmortems: Postmortem[]
+  dailyCompletions?: DailyCompletions
   version: number
 }
 

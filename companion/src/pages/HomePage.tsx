@@ -3,9 +3,11 @@ import { useAppData, todayISO, weekStats, weekFlareStats } from '../hooks/useApp
 import { Card, TierBadge, Button, PageHeader } from '../components/ui'
 
 export function HomePage() {
-  const { data } = useAppData()
+  const { data, markDailyTaskDone, pendingDailyTasks } = useAppData()
   const today = todayISO()
   const todayVitals = data.vitals.find((v) => v.date === today)
+  const tier = todayVitals?.tier ?? 'green'
+  const pending = pendingDailyTasks(tier)
   const stats = weekStats(data.vitals)
   const weekFlares = weekFlareStats(data.flares)
   const recentFlares = data.flares.slice(0, 3)
@@ -55,6 +57,36 @@ export function HomePage() {
           </Link>
         </Card>
       )}
+
+      <Card className="mb-4">
+        <h2 className="text-sm font-medium text-text-muted uppercase tracking-wide mb-3">
+          Daily minimums
+        </h2>
+        {pending.length === 0 ? (
+          <p className="text-sm text-tier-green">
+            Minimum completes done for {tier}. Rest is optional.
+          </p>
+        ) : (
+          <ul className="space-y-2">
+            {pending.map((task) => (
+              <li key={`${task.id}-${task.slot}`} className="flex items-center justify-between gap-2">
+                <span className="text-sm">{task.label}</span>
+                <Button
+                  variant="secondary"
+                  className="min-h-8 px-3 py-1 text-xs shrink-0"
+                  onClick={() => markDailyTaskDone(task.id, task.slot)}
+                >
+                  Done
+                </Button>
+              </li>
+            ))}
+          </ul>
+        )}
+        <p className="text-xs text-text-muted mt-3">
+          Scout nudges on schedule too. Say <span className="text-accent">tasks</span> or{' '}
+          <span className="text-accent">done teeth</span> to the robot.
+        </p>
+      </Card>
 
       <section className="mb-6">
         <h2 className="text-sm font-medium text-text-muted uppercase tracking-wide mb-3">

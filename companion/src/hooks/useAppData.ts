@@ -1,5 +1,11 @@
 import { useCallback, useEffect, useState } from 'react'
 import type { AppData, DailyVitals, FlareLog, Postmortem, Tier } from '../types'
+import {
+  ensureDailyCompletions,
+  markTaskDone,
+  mergeDailyCompletions,
+  pendingTasksForTier,
+} from '../lib/dailyTasks'
 
 const STORAGE_KEY = 'body-os-data'
 const DATA_VERSION = 1
@@ -39,10 +45,19 @@ export function useAppData() {
       id: crypto.randomUUID(),
       createdAt: new Date().toISOString(),
     }
-    setData((prev) => ({
-      ...prev,
-      vitals: [entry, ...prev.vitals.filter((v) => v.date !== vitals.date)],
-    }))
+    setData((prev) => {
+      const today = vitals.date
+      const daily = markTaskDone(
+        ensureDailyCompletions(prev.dailyCompletions, today),
+        'vitals',
+        '*',
+      )
+      return {
+        ...prev,
+        vitals: [entry, ...prev.vitals.filter((v) => v.date !== vitals.date)],
+        dailyCompletions: daily,
+      }
+    })
     return entry
   }, [])
 
@@ -81,7 +96,56 @@ export function useAppData() {
     }
   }, [])
 
-  return { data, addVitals, addFlare, addPostmortem, exportData, importData, clearData }
+  const markDailyTaskDone = useCallback((taskId: string, slot = '*') => {
+    const today = todayISO()
+    setData((prev) => ({
+      ...prev,
+      dailyCompletions: markTaskDone(
+        ensureDailyCompletions(prev.dailyCompletions, today),
+        taskId,
+        slot,
+      ),
+    }))
+  }, [])
+
+  const mergeRobotData = useCallback((incoming: AppData) => {
+    const today = todayISO()
+    setData((prev) => ({
+      ...prev,
+      vitals: incoming.vitals?.length
+        ? mergeByDate(prev.vitals, incoming.vitals)
+        : prev.vitals,
+      flares: incoming.flares?.length ? [...incoming.flares, ...prev.flares] : prev.flares,
+      postmortems: incoming.postmortems?.length
+        ? [...incoming.postmortems, ...prev.postmortems]
+        : prev.postmortems,
+      dailyCompletions: mergeDailyCompletions(
+        prev.dailyCompletions,
+        incoming.dailyCompletions,
+        today,
+      ),
+    }))
+  }, [])
+
+  return {
+    data,
+    addVitals,
+    addFlare,
+    addPostmortem,
+    exportData,
+    importData,
+    clearData,
+    markDailyTaskDone,
+    mergeRobotData,
+    pendingDailyTasks: (tier: Tier) =>
+      pendingTasksForTier(tier, ensureDailyCompletions(data.dailyCompletions, todayISO())),
+  }
+}
+
+function mergeByDate(local: DailyVitals[], incoming: DailyVitals[]): DailyVitals[] {
+  const byDate = new Map(local.map((v) => [v.date, v]))
+  for (const v of incoming) byDate.set(v.date, v)
+  return [...byDate.values()].sort((a, b) => b.date.localeCompare(a.date))
 }
 
 export function todayISO(): string {

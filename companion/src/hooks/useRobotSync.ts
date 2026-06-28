@@ -10,7 +10,7 @@ import {
 
 export function useRobotSync(
   data: AppData,
-  importData: (json: string) => void,
+  mergeRobotData: (incoming: AppData) => void,
 ) {
   const [syncUrl, setSyncUrlState] = useState(getRobotSyncUrl())
   const [status, setStatus] = useState<string | null>(null)
@@ -39,14 +39,17 @@ export function useRobotSync(
     setStatus(null)
     try {
       const pulled = await pullFromRobot(syncUrl)
-      importData(JSON.stringify(pulled))
-      setStatus(`Pulled ${pulled.vitals.length} vitals, ${pulled.flares.length} flares`)
+      mergeRobotData(pulled)
+      const tasks = pulled.dailyCompletions?.done
+        ? Object.keys(pulled.dailyCompletions.done).length
+        : 0
+      setStatus(`Pulled ${pulled.vitals.length} vitals, ${pulled.flares.length} flares, ${tasks} task marks`)
     } catch (e) {
       setStatus(e instanceof Error ? e.message : 'Pull failed')
     } finally {
       setLoading(false)
     }
-  }, [syncUrl, importData])
+  }, [syncUrl, mergeRobotData])
 
   const push = useCallback(async () => {
     setLoading(true)
@@ -54,7 +57,7 @@ export function useRobotSync(
     try {
       const result = await pushToRobot(data, syncUrl)
       const m = result.merged
-      setStatus(`Pushed — merged ${m.vitals ?? 0} vitals, ${m.flares ?? 0} flares`)
+      setStatus(`Pushed — merged ${m.vitals ?? 0} vitals, ${m.flares ?? 0} flares, ${m.daily_completions ?? 0} task sync`)
     } catch (e) {
       setStatus(e instanceof Error ? e.message : 'Push failed')
     } finally {

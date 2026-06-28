@@ -11,6 +11,7 @@ from .content import load_flows
 from .skills.pacing import PacingSkill
 from .skills.dock import DockSkill
 from .skills.shutdown import ShutdownSkill
+from .skills.daily_tasks import DailyTasksSkill
 from .state import SessionState
 from .voice.orchestrator import VoiceOrchestrator
 
@@ -27,6 +28,30 @@ FLOW_ALIASES = {
     "sensory": "sensory-overload",
     "doom": "doom-loop",
     "doomloop": "doom-loop",
+}
+
+TASK_ALIASES = {
+    "vitals": "vitals",
+    "morning": "vitals",
+    "water": "water",
+    "sip": "water",
+    "meds": "meds",
+    "medication": "meds",
+    "bathroom": "bathroom",
+    "wc": "bathroom",
+    "teeth": "teeth",
+    "brush": "teeth",
+    "face": "face",
+    "wash": "face",
+    "breakfast": "meal_am",
+    "meal_am": "meal_am",
+    "lunch": "meal_mid",
+    "meal_mid": "meal_mid",
+    "dinner": "meal_pm",
+    "meal_pm": "meal_pm",
+    "reset_mid": "reset_mid",
+    "reset_deep": "reset_deep",
+    "shutdown_task": "shutdown",
 }
 
 
@@ -47,6 +72,7 @@ class Router:
             config.battery_mock_charging,
         )
         self.dock = DockSkill()
+        self.daily_tasks = DailyTasksSkill()
 
     def _check_crisis(self, text: str) -> bool:
         lower = text.lower()
@@ -60,6 +86,7 @@ class Router:
         name = self.config.name
         return (
             f"I'm {name}. Commands: morning, flare, reset, reset5, deep, shutdown, "
+            "tasks, done teeth|water|bathroom|meds, "
             "hijacked, pain, itch, sensory, doom, pacing start ACTIVITY MINUTES, "
             "tier green|yellow|red|black, come here, go kitchen|desk|bedroom, "
             "status, battery, dock, help, quit."
@@ -83,6 +110,21 @@ class Router:
 
         if lower in ("help", "?"):
             self.voice.say(self._help_text(), force=True)
+            return True
+
+        if lower == "tasks":
+            self.daily_tasks.run_interactive(self.voice, self.store, self.config.tier)
+            return True
+
+        if tokens[0] == "done" and len(tokens) >= 2:
+            task_key = TASK_ALIASES.get(tokens[1], tokens[1])
+            if self.daily_tasks.mark_done(self.store, task_key, self.config.tier):
+                self.voice.say(f"Marked {task_key} done. Nice.", force=True)
+            else:
+                self.voice.say(
+                    "I don't know that task for your tier. Say tasks to see what's open.",
+                    force=True,
+                )
             return True
 
         if lower == "morning":

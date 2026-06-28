@@ -45,6 +45,10 @@ class RobotConfig:
     battery_mock_percent: float = 85.0
     battery_mock_charging: bool = False
     life_context_path: Path | None = None
+    daily_tasks_enabled: bool = True
+    daily_tasks_min_interval: int = 60
+    daily_tasks_red_nudge: bool = True
+    daily_tasks_black_nudge: bool = False
     raw: dict[str, Any] = field(default_factory=dict)
 
     @classmethod
@@ -70,6 +74,7 @@ class RobotConfig:
         autonomy = raw.get("autonomy", {})
         battery = raw.get("battery", {})
         schedule = raw.get("schedule", {})
+        daily = raw.get("daily_tasks", {})
 
         data_dir = Path(raw.get("companion", {}).get("data_dir", "./brain/data/local"))
         if not data_dir.is_absolute():
@@ -108,6 +113,10 @@ class RobotConfig:
             battery_mock_percent=float(battery.get("mock_percent", 85)),
             battery_mock_charging=bool(battery.get("mock_charging", False)),
             life_context_path=ROOT / "life-context.yaml" if (ROOT / "life-context.yaml").exists() else None,
+            daily_tasks_enabled=bool(daily.get("enabled", True)),
+            daily_tasks_min_interval=int(daily.get("min_minutes_between", 60)),
+            daily_tasks_red_nudge=bool(daily.get("nudge_on_red", True)),
+            daily_tasks_black_nudge=bool(daily.get("nudge_on_black", False)),
             raw=raw,
         )
 

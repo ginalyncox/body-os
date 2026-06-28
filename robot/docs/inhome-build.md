@@ -96,6 +96,8 @@ See thermal-cooling.md — ignore outdoor/thermosiphon sections unless you revis
 
 ## Tier + rolling policy (unchanged)
 
+Daily hygiene and minimum completes: see [daily-nudges.md](./daily-nudges.md).
+
 | Your tier | Scout rolls? |
 |-----------|----------------|
 | Green | Yes — kitchen, desk, come here |

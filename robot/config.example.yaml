@@ -63,6 +63,13 @@ schedule:
   shutdown: "22:00"
   midday_reset: "13:00"
 
+# Tier-aware nudges for minimum daily completes (hygiene, water, meds, food)
+daily_tasks:
+  enabled: true
+  min_minutes_between: 60    # don't repeat the same nudge within this window
+  nudge_on_red: true         # survival floor: bathroom, teeth once, water, meds
+  nudge_on_black: false      # set true only if you want water/meds/bathroom whispers
+
 companion:
   data_dir: ./brain/data/local
 

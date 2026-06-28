@@ -20,6 +20,7 @@ export async function pullFromRobot(baseUrl?: string): Promise<AppData> {
     vitals: data.vitals ?? [],
     flares: data.flares ?? [],
     postmortems: data.postmortems ?? [],
+    dailyCompletions: data.dailyCompletions ?? data.daily_completions,
   }
 }
 

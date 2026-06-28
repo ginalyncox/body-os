@@ -16,12 +16,15 @@ class DataStore:
         self.flares_path = data_dir / "flares.json"
         self.pacing_path = data_dir / "pacing.json"
         self.postmortems_path = data_dir / "postmortems.json"
+        self.daily_tasks_path = data_dir / "daily_completions.json"
         self._ensure_files()
 
     def _ensure_files(self) -> None:
         for p in (self.vitals_path, self.flares_path, self.pacing_path, self.postmortems_path):
             if not p.exists():
                 p.write_text("[]")
+        if not self.daily_tasks_path.exists():
+            self.daily_tasks_path.write_text("{}")
 
     def _read(self, path: Path) -> list[dict[str, Any]]:
         return json.loads(path.read_text())
@@ -82,6 +85,7 @@ class DataStore:
             "flares": self._read(self.flares_path),
             "pacing": self._read(self.pacing_path),
             "postmortems": self._read(self.postmortems_path),
+            "daily_completions": self.daily_record(),
         }
 
     def _merge_by_id(self, existing: list[dict], incoming: list[dict], id_key: str = "id") -> list[dict]:
@@ -99,7 +103,7 @@ class DataStore:
         from .sync_transform import companion_bundle_to_robot
 
         robot_data = companion_bundle_to_robot(bundle)
-        counts = {"vitals": 0, "flares": 0, "postmortems": 0}
+        counts = {"vitals": 0, "flares": 0, "postmortems": 0, "daily_completions": 0}
 
         if robot_data["vitals"]:
             merged = self._merge_by_id(self._read(self.vitals_path), robot_data["vitals"], "date")
@@ -116,6 +120,10 @@ class DataStore:
             counts["postmortems"] = len(robot_data["postmortems"])
             self._write(self.postmortems_path, merged)
 
+        if robot_data.get("daily_completions"):
+            self.merge_daily_completions(robot_data["daily_completions"])
+            counts["daily_completions"] = 1
+
         return counts
 
     def add_postmortem(self, entry: dict[str, Any]) -> dict[str, Any]:
@@ -125,3 +133,67 @@ class DataStore:
         rows.insert(0, entry)
         self._write(self.postmortems_path, rows)
         return entry
+
+    def _today_str(self) -> str:
+        return datetime.now().strftime("%Y-%m-%d")
+
+    def _read_daily(self) -> dict[str, Any]:
+        raw = self.daily_tasks_path.read_text()
+        return json.loads(raw) if raw.strip() else {}
+
+    def _write_daily(self, data: dict[str, Any]) -> None:
+        self.daily_tasks_path.write_text(json.dumps(data, indent=2, default=str))
+
+    def daily_record(self) -> dict[str, Any]:
+        today = self._today_str()
+        data = self._read_daily()
+        if data.get("date") != today:
+            data = {"date": today, "done": {}, "nudged": {}}
+            self._write_daily(data)
+        return data
+
+    def is_task_done(self, task_id: str, slot: str = "*") -> bool:
+        rec = self.daily_record()
+        slots = rec.get("done", {}).get(task_id, [])
+        return slot in slots or "*" in slots
+
+    def mark_task_done(self, task_id: str, slot: str = "*") -> None:
+        rec = self.daily_record()
+        done = rec.setdefault("done", {})
+        slots = set(done.get(task_id, []))
+        slots.add(slot)
+        done[task_id] = sorted(slots)
+        if task_id == "vitals" and not self.today_vitals():
+            pass  # vitals logged separately
+        self._write_daily(rec)
+
+    def mark_nudged(self, task_id: str, slot: str) -> None:
+        rec = self.daily_record()
+        key = f"{task_id}:{slot}"
+        rec.setdefault("nudged", {})[key] = datetime.now().isoformat()
+        self._write_daily(rec)
+
+    def last_nudged(self, task_id: str, slot: str) -> datetime | None:
+        rec = self.daily_record()
+        raw = rec.get("nudged", {}).get(f"{task_id}:{slot}")
+        if not raw:
+            return None
+        try:
+            return datetime.fromisoformat(raw)
+        except ValueError:
+            return None
+
+    def pending_tasks_export(self) -> dict[str, Any]:
+        return self.daily_record()
+
+    def merge_daily_completions(self, incoming: dict[str, Any]) -> None:
+        """Merge companion daily checklist into robot store (union of done slots)."""
+        today = self._today_str()
+        if incoming.get("date") != today:
+            return
+        rec = self.daily_record()
+        for task_id, slots in incoming.get("done", {}).items():
+            existing = set(rec.setdefault("done", {}).get(task_id, []))
+            existing.update(slots)
+            rec["done"][task_id] = sorted(existing)
+        self._write_daily(rec)
