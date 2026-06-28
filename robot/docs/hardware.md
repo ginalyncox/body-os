@@ -1,6 +1,6 @@
-# Hardware Guide — Rolling Assistive Robot
+# Hardware Guide — In-Home Rolling Assistive Robot
 
-Three build tiers. Start at **Tier 0** (simulation), move up when the brain behaves the way you need.
+**Scope:** indoor hard floors only. For the full build path see [inhome-build.md](inhome-build.md). Outdoor / gyrosphere: deferred.
 
 ---
 
@@ -139,11 +139,9 @@ Full guide: [xbox360-salvage.md](xbox360-salvage.md)
 
 ---
 
-## Gyrosphere outdoor path
+## Gyrosphere / outdoor (deferred)
 
-Want a **rolling ball** that goes **outside**? Different chassis, same Scout brain.
-
-- [gyrosphere-outdoor.md](gyrosphere-outdoor.md) — pendulum drive, weather, patio geofence, SFN-aware limits
+Not in current scope. Reference only: [gyrosphere-outdoor.md](gyrosphere-outdoor.md), [thermal-cooling.md](thermal-cooling.md).
 
 ---
 

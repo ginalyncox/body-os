@@ -1,8 +1,10 @@
 # body-os Assistive Robot
 
-A rolling, talking assistive aid that runs **body-os** protocols and **CBT-CP** skills on your behalf — calmly, predictably, without improvisation during flares.
+A rolling, talking **in-home** assistive aid that runs **body-os** protocols and **CBT-CP** skills — kitchen, desk, bedroom, not patio or yard.
 
 > *"Logs before analysis. Runbooks over improvisation."* — but spoken, at 2 AM, when you can't read a screen.
+
+**Build path:** [docs/inhome-build.md](docs/inhome-build.md) ← start here
 
 ## What this robot does
 
@@ -117,10 +119,12 @@ Scout and you care for each other — not one-way caregiving.
 | Help when stuck | Tier-appropriate quiet |
 
 Docs:
+- [docs/inhome-build.md](docs/inhome-build.md) — **canonical indoor build** (wheels, dock, Kinect)
 - [docs/mutual-care.md](docs/mutual-care.md) — relationship model
 - [docs/autonomy.md](docs/autonomy.md) — how Scout acts alone
-- [docs/charging-dock.md](docs/charging-dock.md) — self-charging hardware
-- [docs/gyrosphere-outdoor.md](docs/gyrosphere-outdoor.md) — outdoor rolling ball chassis
+- [docs/charging-dock.md](docs/charging-dock.md) — self-charging dock
+- [docs/hardware.md](docs/hardware.md) — parts list
+- Deferred: [docs/gyrosphere-outdoor.md](docs/gyrosphere-outdoor.md) (out of scope)
 
 ```bash
 # Simulate low battery → Scout seeks dock

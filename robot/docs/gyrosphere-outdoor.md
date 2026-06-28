@@ -1,8 +1,7 @@
 # Gyrosphere Scout — Outdoor Rolling Aid
 
-You want a **gyrosphere**: a ball that rolls, with Scout's brain inside, **and it has to work outside**. That's a real robot architecture — harder than wheels, cooler than a cart, and worth designing deliberately so it doesn't become a lawn ornament that bricked itself in the rain.
-
-> **Software stays the same.** The Pi brain, body-os tiers, mutual care, advocacy scripts — all unchanged. Only the **chassis layer** and **environment hardening** change.
+> **Status: OUT OF SCOPE.** Scout is **in-home only** for now. See [inhome-build.md](inhome-build.md) for the active build path.  
+> This file is kept if you revisit outdoor later — don't build from it today.
 
 ---
 

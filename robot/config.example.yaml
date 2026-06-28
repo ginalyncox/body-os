@@ -1,5 +1,8 @@
 # body-os assistive robot configuration
 # Copy: cp config.example.yaml config.yaml
+# Scope: IN-HOME ONLY (kitchen, desk, bedroom — hard floors)
+
+environment: inhome   # inhome only — outdoor disabled
 
 robot:
   name: Scout
@@ -23,21 +26,11 @@ motor:
   allowed_tiers:
     - green
     - yellow
-  max_speed: 0.3         # m/s cap
-  # L298N BCM pins (uncomment for Raspberry Pi + gpio driver)
-  # gpio_pins:
-  #   ena: 18
-  #   in1: 23
-  #   in2: 24
-  #   enb: 19
-  #   in3: 27
-  #   in4: 22
-  # serial_port: /dev/ttyUSB0
-  # serial_baud: 115200
+  max_speed: 0.3         # m/s cap — indoor only
   waypoints:
-    dock: { x: 0.0, y: 0.0 }
+    dock: { x: 0.0, y: 0.0 }      # charge dock (bedroom or desk)
     desk: { x: 1.0, y: 0.0 }
-    kitchen: { x: 3.0, y: 2.0 }
+    kitchen: { x: 3.0, y: 2.0 }   # near saddle stool
     bedroom: { x: 0.5, y: 4.0 }
 
 autonomy:
@@ -45,31 +38,20 @@ autonomy:
   check_interval_seconds: 30
   proactive: true
   mutual_care: true
-  roll_when_charging: true   # Scout rolls to dock alone; false on risky red days
+  roll_when_charging: true
 
 battery:
   driver: mock              # mock | ina219
   mock_percent: 85
   mock_charging: false
-  # Test low battery: mock_percent: 22
 
-outdoor:
-  enabled: false
-  max_tier: yellow
-  max_minutes: 20
-  porch_dock_waypoint: dock
-
-# Gyrosphere chassis (roadmap — pendulum drive firmware)
-chassis:
-  type: differential   # differential | gyrosphere
-  sphere_diameter_cm: 50
-
+# Indoor thermal — Pi fan sufficient; no shade-seeking
 thermal:
-  pi_max_c: 78
-  internal_max_c: 45
-  fan_gpio: 18           # optional PWM fan
-  seek_shade_at_c: 70    # roll to porch dock / shade waypoint
-  shutdown_at_c: 85
+  pi_max_c: 80
+  fan_gpio: 18
+
+chassis:
+  type: differential   # differential | gyrosphere (indoor only if ever)
 
 sync:
   enabled: true
@@ -87,3 +69,7 @@ companion:
 meds:
   enabled: false
   reminders: []
+
+# --- OUT OF SCOPE (do not enable) ---
+# outdoor.enabled: false
+# See docs/gyrosphere-outdoor.md if revisiting later

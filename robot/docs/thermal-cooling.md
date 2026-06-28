@@ -1,6 +1,7 @@
 # Thermal Management — Outdoor Gyrosphere
 
-A sealed ball in the sun is an **oven that rolls**. "Self liquid cooling" sounds like a gaming PC — in Scout's body it means **moving heat out without you babysitting it**, with or without actual liquid.
+> **Status: OUT OF SCOPE** for in-home Scout. Use a Pi heatsink + fan indoors.  
+> See [inhome-build.md](inhome-build.md). This file applies only if outdoor gyrosphere returns later.
 
 ---
 
