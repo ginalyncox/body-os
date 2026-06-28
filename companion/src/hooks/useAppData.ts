@@ -11,12 +11,24 @@ const emptyData = (): AppData => ({
   version: DATA_VERSION,
 })
 
+function normalizeData(value: unknown): AppData {
+  const parsed = value && typeof value === 'object' ? value : {}
+  const data = { ...emptyData(), ...parsed } as AppData
+
+  return {
+    ...data,
+    vitals: Array.isArray(data.vitals) ? data.vitals : [],
+    flares: Array.isArray(data.flares) ? data.flares : [],
+    postmortems: Array.isArray(data.postmortems) ? data.postmortems : [],
+    version: typeof data.version === 'number' ? data.version : DATA_VERSION,
+  }
+}
+
 function loadData(): AppData {
   try {
     const raw = localStorage.getItem(STORAGE_KEY)
     if (!raw) return emptyData()
-    const parsed = JSON.parse(raw) as AppData
-    return { ...emptyData(), ...parsed }
+    return normalizeData(JSON.parse(raw))
   } catch {
     return emptyData()
   }
@@ -71,8 +83,7 @@ export function useAppData() {
   }, [data])
 
   const importData = useCallback((json: string) => {
-    const parsed = JSON.parse(json) as AppData
-    setData({ ...emptyData(), ...parsed })
+    setData(normalizeData(JSON.parse(json)))
   }, [])
 
   const clearData = useCallback(() => {
@@ -85,7 +96,11 @@ export function useAppData() {
 }
 
 export function todayISO(): string {
-  return new Date().toISOString().slice(0, 10)
+  const today = new Date()
+  const year = today.getFullYear()
+  const month = String(today.getMonth() + 1).padStart(2, '0')
+  const day = String(today.getDate()).padStart(2, '0')
+  return `${year}-${month}-${day}`
 }
 
 export function suggestTier(vitals: Partial<DailyVitals>): Tier | null {

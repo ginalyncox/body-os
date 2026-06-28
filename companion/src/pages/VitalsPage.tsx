@@ -12,21 +12,46 @@ export function VitalsPage() {
   const navigate = useNavigate()
   const today = todayISO()
   const existing = data.vitals.find((v) => v.date === today)
+  const initialSleepHours = existing?.sleepHours ?? 7
+  const initialMorningPain = existing?.morningPain ?? 3
+  const initialMorningEnergy = existing?.morningEnergy ?? 5
+  const initialAutonomicState = existing?.autonomicState ?? 'Calm'
 
-  const [sleepHours, setSleepHours] = useState(existing?.sleepHours ?? 7)
+  const [sleepHours, setSleepHours] = useState(initialSleepHours)
   const [sleepQuality, setSleepQuality] = useState(existing?.sleepQuality ?? 3)
-  const [morningPain, setMorningPain] = useState(existing?.morningPain ?? 3)
-  const [morningEnergy, setMorningEnergy] = useState(existing?.morningEnergy ?? 5)
-  const [autonomicState, setAutonomicState] = useState<AutonomicState>(existing?.autonomicState ?? 'Calm')
-  const [tier, setTier] = useState<Tier>(existing?.tier ?? 'green')
+  const [morningPain, setMorningPain] = useState(initialMorningPain)
+  const [morningEnergy, setMorningEnergy] = useState(initialMorningEnergy)
+  const [autonomicState, setAutonomicState] = useState<AutonomicState>(initialAutonomicState)
+  const [tier, setTier] = useState<Tier>(
+    existing?.tier ??
+    suggestTier({
+      morningPain: initialMorningPain,
+      morningEnergy: initialMorningEnergy,
+      sleepHours: initialSleepHours,
+      autonomicState: initialAutonomicState,
+    }) ??
+    'green',
+  )
   const [notable, setNotable] = useState(existing?.notable ?? '')
   const [tierOverridden, setTierOverridden] = useState(false)
 
   const suggested = suggestTier({ morningPain, morningEnergy, sleepHours, autonomicState })
 
-  const handleFieldChange = () => {
-    if (!tierOverridden && suggested) {
-      setTier(suggested)
+  const handleFieldChange = (updatedVitals: {
+    sleepHours?: number
+    morningPain?: number
+    morningEnergy?: number
+    autonomicState?: AutonomicState
+  }) => {
+    const nextSuggested = suggestTier({
+      morningPain,
+      morningEnergy,
+      sleepHours,
+      autonomicState,
+      ...updatedVitals,
+    })
+    if (!tierOverridden && nextSuggested) {
+      setTier(nextSuggested)
     }
   }
 
@@ -34,7 +59,7 @@ export function VitalsPage() {
     e.preventDefault()
     addVitals({
       date: today,
-      tier,
+      tier: !tierOverridden && suggested ? suggested : tier,
       sleepHours,
       sleepQuality,
       morningPain,
@@ -87,8 +112,9 @@ export function VitalsPage() {
           step={0.5}
           value={sleepHours}
           onChange={(e) => {
-            setSleepHours(Number(e.target.value))
-            handleFieldChange()
+            const nextSleepHours = Number(e.target.value)
+            setSleepHours(nextSleepHours)
+            handleFieldChange({ sleepHours: nextSleepHours })
           }}
           required
         />
@@ -111,8 +137,9 @@ export function VitalsPage() {
             max={10}
             value={morningPain}
             onChange={(e) => {
-              setMorningPain(Number(e.target.value))
-              handleFieldChange()
+              const nextMorningPain = Number(e.target.value)
+              setMorningPain(nextMorningPain)
+              handleFieldChange({ morningPain: nextMorningPain })
             }}
             className="w-full accent-accent"
           />
@@ -127,8 +154,9 @@ export function VitalsPage() {
             max={10}
             value={morningEnergy}
             onChange={(e) => {
-              setMorningEnergy(Number(e.target.value))
-              handleFieldChange()
+              const nextMorningEnergy = Number(e.target.value)
+              setMorningEnergy(nextMorningEnergy)
+              handleFieldChange({ morningEnergy: nextMorningEnergy })
             }}
             className="w-full accent-accent"
           />
@@ -139,8 +167,9 @@ export function VitalsPage() {
           label="Autonomic state"
           value={autonomicState}
           onChange={(e) => {
-            setAutonomicState(e.target.value as AutonomicState)
-            handleFieldChange()
+            const nextAutonomicState = e.target.value as AutonomicState
+            setAutonomicState(nextAutonomicState)
+            handleFieldChange({ autonomicState: nextAutonomicState })
           }}
         >
           {AUTONOMIC.map((a) => (

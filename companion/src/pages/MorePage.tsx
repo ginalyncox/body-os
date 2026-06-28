@@ -1,29 +1,31 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
-import { useAppData } from '../hooks/useAppData'
+import { useAppData, todayISO } from '../hooks/useAppData'
 import { KNOWN_TRIGGERS, SLOS, PROTOCOLS } from '../data/content'
-import { Card, Button, Textarea, TierBadge, PageHeader } from '../components/ui'
+import { Card, Button, Input, Select, Textarea, TierBadge, PageHeader } from '../components/ui'
+
+const emptyPostmortemText = () => ({
+  date: todayISO(),
+  tierReached: 'red' as 'red' | 'black',
+  peakSeverity: 8,
+  whatHappened: '',
+  triggers: '',
+  whatWorked: '',
+  pastSelfActions: '',
+  futureNote: '',
+})
 
 export function MorePage() {
   const { data, addPostmortem, exportData, importData, clearData } = useAppData()
   const [showPmForm, setShowPmForm] = useState(false)
-  const [pmText, setPmText] = useState({
-    date: new Date().toISOString().slice(0, 10),
-    tierReached: 'red' as 'red' | 'black',
-    peakSeverity: 8,
-    whatHappened: '',
-    triggers: '',
-    whatWorked: '',
-    pastSelfActions: '',
-    futureNote: '',
-  })
+  const [pmText, setPmText] = useState(emptyPostmortemText)
 
   const handleExport = () => {
     const blob = new Blob([exportData()], { type: 'application/json' })
     const url = URL.createObjectURL(blob)
     const a = document.createElement('a')
     a.href = url
-    a.download = `body-os-export-${new Date().toISOString().slice(0, 10)}.json`
+    a.download = `body-os-export-${todayISO()}.json`
     a.click()
     URL.revokeObjectURL(url)
   }
@@ -59,16 +61,7 @@ export function MorePage() {
       futureNote: pmText.futureNote,
     })
     setShowPmForm(false)
-    setPmText({
-      date: new Date().toISOString().slice(0, 10),
-      tierReached: 'red',
-      peakSeverity: 8,
-      whatHappened: '',
-      triggers: '',
-      whatWorked: '',
-      pastSelfActions: '',
-      futureNote: '',
-    })
+    setPmText(emptyPostmortemText())
   }
 
   return (
@@ -141,6 +134,30 @@ export function MorePage() {
 
         {showPmForm && (
           <form onSubmit={submitPostmortem} className="space-y-3 mb-4">
+            <Input
+              label="Date"
+              type="date"
+              value={pmText.date}
+              onChange={(e) => setPmText({ ...pmText, date: e.target.value })}
+              required
+            />
+            <Select
+              label="Tier reached"
+              value={pmText.tierReached}
+              onChange={(e) => setPmText({ ...pmText, tierReached: e.target.value as 'red' | 'black' })}
+            >
+              <option value="red">Red</option>
+              <option value="black">Black</option>
+            </Select>
+            <Input
+              label="Peak severity (1-10)"
+              type="number"
+              min={1}
+              max={10}
+              value={pmText.peakSeverity}
+              onChange={(e) => setPmText({ ...pmText, peakSeverity: Number(e.target.value) })}
+              required
+            />
             <Textarea
               label="What happened (factual)"
               value={pmText.whatHappened}
