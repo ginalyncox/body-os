@@ -49,6 +49,19 @@ class RobotConfig:
     daily_tasks_min_interval: int = 60
     daily_tasks_red_nudge: bool = True
     daily_tasks_black_nudge: bool = False
+    sms_enabled: bool = False
+    sms_nudges: bool = True
+    sms_nudges_while_charging: bool = True
+    sms_voice_also: bool = False
+    sms_account_sid: str = ""
+    sms_auth_token: str = ""
+    sms_from_number: str = ""
+    sms_to_number: str = ""
+    sms_allowed_numbers: list[str] = field(default_factory=list)
+    form_factor: str = "portable"  # portable | rolling
+    emergency_enabled: bool = False
+    emergency_dry_run: bool = True
+    emergency_config_path: Path | None = None
     raw: dict[str, Any] = field(default_factory=dict)
 
     @classmethod
@@ -75,6 +88,8 @@ class RobotConfig:
         battery = raw.get("battery", {})
         schedule = raw.get("schedule", {})
         daily = raw.get("daily_tasks", {})
+        sms = raw.get("sms", {})
+        emergency = raw.get("emergency", {})
 
         data_dir = Path(raw.get("companion", {}).get("data_dir", "./brain/data/local"))
         if not data_dir.is_absolute():
@@ -117,6 +132,23 @@ class RobotConfig:
             daily_tasks_min_interval=int(daily.get("min_minutes_between", 60)),
             daily_tasks_red_nudge=bool(daily.get("nudge_on_red", True)),
             daily_tasks_black_nudge=bool(daily.get("nudge_on_black", False)),
+            sms_enabled=bool(sms.get("enabled", False)),
+            sms_nudges=bool(sms.get("nudges", True)),
+            sms_nudges_while_charging=bool(sms.get("nudges_while_charging", True)),
+            sms_voice_also=bool(sms.get("voice_also", False)),
+            sms_account_sid=str(sms.get("account_sid", "")),
+            sms_auth_token=str(sms.get("auth_token", "")),
+            sms_from_number=str(sms.get("from_number", "")),
+            sms_to_number=str(sms.get("to_number", "")),
+            sms_allowed_numbers=list(sms.get("allowed_numbers", [])),
+            form_factor=str(raw.get("form_factor", robot.get("form_factor", "portable"))),
+            emergency_enabled=bool(emergency.get("enabled", False)),
+            emergency_dry_run=bool(emergency.get("dry_run", True)),
+            emergency_config_path=(
+                ROOT / emergency["config_path"]
+                if emergency.get("config_path")
+                else (ROOT / "emergency.yaml" if (ROOT / "emergency.yaml").exists() else None)
+            ),
             raw=raw,
         )
 

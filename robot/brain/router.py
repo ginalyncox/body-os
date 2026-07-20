@@ -11,7 +11,11 @@ from .content import load_flows
 from .skills.pacing import PacingSkill
 from .skills.dock import DockSkill
 from .skills.shutdown import ShutdownSkill
-from .skills.daily_tasks import DailyTasksSkill
+from .skills.emergency import EmergencySkill, EmergencyMode
+from .emergency.settings import load_emergency_settings
+from .emergency.button import EmergencyButtonMonitor
+from .sms.channel import TextChannel
+from .sms.client import SmsClient
 from .state import SessionState
 from .voice.orchestrator import VoiceOrchestrator
 
@@ -73,12 +77,93 @@ class Router:
         )
         self.dock = DockSkill()
         self.daily_tasks = DailyTasksSkill()
+        self.sms = SmsClient(config)
+        self._emergency: EmergencySkill | None = None
+
+    def emergency_skill(self) -> EmergencySkill:
+        if self._emergency is None:
+            settings = load_emergency_settings(self.config.emergency_config_path)
+            settings.enabled = settings.enabled or self.config.emergency_enabled
+            settings.dry_run = self.config.emergency_dry_run
+            self._emergency = EmergencySkill(settings)
+        return self._emergency
+
+    def trigger_emergency_button(self) -> None:
+        self.emergency_skill().escalate(
+            EmergencyMode.EMS,
+            self.voice,
+            self.store,
+            skip_confirm=True,
+        )
+
+    def _sms_help_text(self) -> str:
+        name = self.config.name
+        return (
+            f"{name} SMS: tasks, done teeth|water|bathroom|meds, "
+            "morning 7 5 4 edgy, tier red, status, help. Crisis: 988."
+        )
+
+    def handle_sms(self, text: str) -> list[str]:
+        """Process inbound SMS; returns reply lines to send back."""
+        channel = TextChannel(self.config)
+        voice = self.voice
+        self.voice = channel  # type: ignore[assignment]
+        try:
+            lower = text.strip().lower()
+            tokens = lower.split()
+            if tokens and tokens[0] == "morning":
+                run_morning_sms(tokens, channel, self.store, self.config, self.state)
+            elif tokens and tokens[0] == "flare" and len(tokens) >= 3:
+                try:
+                    severity = int(tokens[1])
+                except ValueError:
+                    severity = 5
+                summary = " ".join(tokens[2:])
+                self.store.add_flare({
+                    "summary": summary[:120],
+                    "severity": severity,
+                    "primary_symptom": "Pain",
+                    "body_regions": [],
+                    "suspected_triggers": [],
+                    "script_run": "none",
+                })
+                channel.say(f"Flare logged {severity}/10: {summary[:80]}", force=True)
+            elif lower in ("help", "?"):
+                channel.say(self._sms_help_text(), force=True)
+            else:
+                self.handle(text)
+        finally:
+            self.voice = voice
+
+        if not channel.messages and self.config.tier != "black":
+            channel.messages.append("Didn't catch that. Text help for commands.")
+        return channel.messages
+
+    def send_sms(self, text: str) -> bool:
+        return self.sms.send(text)
+
+    def nudge_via_sms(self, msg: str) -> bool:
+        if not self.config.sms_enabled or not self.config.sms_nudges:
+            return False
+        return self.send_sms(f"{self.config.name}: {msg}")
 
     def _check_crisis(self, text: str) -> bool:
         lower = text.lower()
         keywords = self.config.crisis_keywords or load_flows().get("crisis_keywords", [])
         if any(k in lower for k in keywords):
-            CrisisSkill().run(self.voice)
+            if self.config.emergency_enabled:
+                self.voice.say(
+                    "I hear you. Starting crisis line sequence.",
+                    force=True,
+                )
+                self.emergency_skill().escalate(
+                    EmergencyMode.MENTAL,
+                    self.voice,
+                    self.store,
+                    skip_confirm=True,
+                )
+            else:
+                CrisisSkill().run(self.voice)
             return True
         return False
 
@@ -88,7 +173,7 @@ class Router:
             f"I'm {name}. Commands: morning, flare, reset, reset5, deep, shutdown, "
             "tasks, done teeth|water|bathroom|meds, "
             "hijacked, pain, itch, sensory, doom, pacing start ACTIVITY MINUTES, "
-            "tier green|yellow|red|black, come here, go kitchen|desk|bedroom, "
+            "tier green|yellow|red|black, emergency, call 911, call 988, "
             "status, battery, dock, help, quit."
         )
 
@@ -110,6 +195,34 @@ class Router:
 
         if lower in ("help", "?"):
             self.voice.say(self._help_text(), force=True)
+            return True
+
+        if lower in ("cancel", "abort"):
+            self.voice.say("Cancelled.", force=True)
+            return True
+
+        if lower in ("emergency", "scout emergency", "sos"):
+            self.emergency_skill().escalate(
+                EmergencyMode.EMS, self.voice, self.store,
+            )
+            return True
+
+        if lower in ("call 911", "911"):
+            self.emergency_skill().escalate(
+                EmergencyMode.EMS, self.voice, self.store,
+            )
+            return True
+
+        if lower in ("call 988", "988", "crisis line"):
+            self.emergency_skill().escalate(
+                EmergencyMode.MENTAL, self.voice, self.store,
+            )
+            return True
+
+        if lower == "contacts only":
+            self.emergency_skill().escalate(
+                EmergencyMode.CONTACTS_ONLY, self.voice, self.store,
+            )
             return True
 
         if lower == "tasks":

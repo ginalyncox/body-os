@@ -2,10 +2,15 @@ from __future__ import annotations
 
 from datetime import datetime, timedelta
 
+from typing import Protocol
+
 from ..config import RobotConfig
 from ..content.tasks import tasks_for_tier
 from ..data.store import DataStore
-from ..voice.orchestrator import VoiceOrchestrator
+
+
+class NudgeChannel(Protocol):
+    def say(self, text: str, force: bool = False) -> None: ...
 
 
 class DailyTasksSkill:
@@ -62,21 +67,21 @@ class DailyTasksSkill:
 
     def maybe_nudge(
         self,
-        voice: VoiceOrchestrator,
+        channel: NudgeChannel,
         store: DataStore,
         config: RobotConfig,
-    ) -> bool:
-        """Return True if a nudge was spoken."""
+    ) -> str | None:
+        """Return nudge text if one was sent, else None."""
         if not config.daily_tasks_enabled:
-            return False
+            return None
 
         tier = config.tier
         if tier == "black" and not config.daily_tasks_black_nudge:
-            return False
+            return None
         if not config.proactive and tier in ("green", "yellow"):
-            return False
+            return None
         if tier == "red" and not config.daily_tasks_red_nudge:
-            return False
+            return None
 
         now = datetime.now()
         now_hm = now.strftime("%H:%M")
@@ -93,10 +98,10 @@ class DailyTasksSkill:
                     continue
 
                 msg = self._nudge_text(task, tier)
-                voice.say(msg, force=tier != "black" or task["id"] in ("water", "meds", "bathroom"))
+                channel.say(msg, force=tier != "black" or task["id"] in ("water", "meds", "bathroom"))
                 store.mark_nudged(task["id"], slot)
-                return True
-        return False
+                return msg
+        return None
 
     def _nudge_text(self, task: dict, tier: str) -> str:
         label = task["label"]
@@ -115,11 +120,11 @@ class DailyTasksSkill:
             return f"Yellow day — {base}"
         return base
 
-    def run_interactive(self, voice: VoiceOrchestrator, store: DataStore, tier: str) -> None:
-        voice.say(self.list_status(store, tier), force=True)
+    def run_interactive(self, channel: NudgeChannel, store: DataStore, tier: str) -> None:
+        channel.say(self.list_status(store, tier), force=True)
         pending = self.pending(store, tier)
         if pending:
-            voice.say(
-                "Say done plus the task: done teeth, done water, done bathroom, done meds.",
+            channel.say(
+                "Reply: done teeth, done water, done bathroom, done meds.",
                 force=True,
             )
