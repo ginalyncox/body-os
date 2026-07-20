@@ -183,6 +183,18 @@ class DataStore:
         except ValueError:
             return None
 
+    def last_nudged_any(self) -> datetime | None:
+        """Return the most recent nudge across tasks so Scout does not stack reminders."""
+        latest: datetime | None = None
+        for raw in self.daily_record().get("nudged", {}).values():
+            try:
+                value = datetime.fromisoformat(raw)
+            except (TypeError, ValueError):
+                continue
+            if latest is None or value > latest:
+                latest = value
+        return latest
+
     def pending_tasks_export(self) -> dict[str, Any]:
         return self.daily_record()
 

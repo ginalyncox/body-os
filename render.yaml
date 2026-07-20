@@ -1,9 +1,13 @@
 services:
   - type: web
     name: body-os-companion
-    runtime: static
-    buildCommand: cd companion && npm install && npm run build
-    staticPublishPath: companion/dist
+    runtime: node
+    plan: free
+    buildCommand: cd companion && npm ci && npm run build
+    startCommand: cd companion && npm start
+    envVars:
+      - key: OPENAI_API_KEY
+        sync: false
     headers:
       - path: /*
         name: Cache-Control

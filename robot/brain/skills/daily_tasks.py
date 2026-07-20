@@ -86,6 +86,13 @@ class DailyTasksSkill:
         now = datetime.now()
         now_hm = now.strftime("%H:%M")
 
+        # A single global cooldown prevents a second task from speaking
+        # immediately after another reminder. Reduced-cognitive-load behavior
+        # matters more than maximizing reminder throughput.
+        last_any = store.last_nudged_any()
+        if last_any and now - last_any < timedelta(minutes=self.min_minutes_between):
+            return None
+
         for task in tasks_for_tier(tier):
             for time_str in task.get("times", []):
                 if now_hm < time_str:
