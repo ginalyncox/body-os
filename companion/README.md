@@ -13,6 +13,7 @@ Local-first web companion for the [body-os](https://github.com/ginalyncox/body-o
 | **Known Triggers** | Confirmed, suspect, and cleared triggers |
 | **Postmortems** | Blameless retros after red/black days |
 | **SLO dashboard** | Weekly green/yellow day tracking |
+| **Incident Commander** | GPT-5.6 or offline runbook response from an unstructured flare report |
 
 ## Design principles
 
@@ -39,6 +40,17 @@ npm run preview
 ```
 
 Deploy the `dist/` folder as a static site (Render, Netlify, GitHub Pages, etc.).
+
+For the GPT-5.6 Incident Commander, run the included Node server so the API key
+stays server-side:
+
+```bash
+OPENAI_API_KEY=your_key npm start
+```
+
+The root `render.yaml` configures this server and expects `OPENAI_API_KEY` as a
+secret environment variable. The companion automatically uses its offline
+runbook matcher if the API is unavailable.
 
 ## Data
 

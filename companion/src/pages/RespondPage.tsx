@@ -3,6 +3,7 @@ import { useSearchParams } from 'react-router-dom'
 import { GUIDED_FLOWS } from '../data/content'
 import { FlowCard, GuidedRunner } from '../components/GuidedRunner'
 import { PageHeader } from '../components/ui'
+import { IncidentCommander } from '../components/IncidentCommander'
 import type { GuidedFlow } from '../types'
 
 export function RespondPage() {
@@ -38,6 +39,8 @@ export function RespondPage() {
         title="Respond"
         subtitle="Execute a script. Don't problem-solve during a flare."
       />
+
+      <IncidentCommander />
 
       <section className="mb-8">
         <h2 className="text-sm font-medium text-text-muted uppercase tracking-wide mb-3">

@@ -34,6 +34,30 @@ cd companion && npm install && npm run dev
 
 See [companion/README.md](companion/README.md) for details.
 
+### Incident Commander — OpenAI Build Week 2026
+
+The **Incident Commander** turns an unstructured flare report into a calm,
+one-step-at-a-time response drawn from BodyOS protocols. When configured, the
+server uses the OpenAI Responses API with `gpt-5.6`; when the model is unavailable,
+the companion falls back to deterministic local runbook matching.
+
+- Low-cognitive-load steps with browser voice readout
+- Green / yellow / red / black capacity-tier selection
+- Explicit emergency routing without diagnosis or treatment changes
+- Automatic local Flare Log entry
+- Clinician-ready incident summary
+- `store: false` API requests; saved history remains in the browser
+
+```bash
+cd companion
+npm install
+npm run build
+OPENAI_API_KEY=your_key npm start
+```
+
+Without `OPENAI_API_KEY`, the app remains fully usable with its offline BodyOS
+runbooks. Never place the key in client code or commit it to the repository.
+
 ## Assistive robot (in-home only)
 
 A rolling, talking robot brain for **indoor** use — kitchen, desk, bedroom. Voice runbooks, mutual care, charging dock, companion sync.
